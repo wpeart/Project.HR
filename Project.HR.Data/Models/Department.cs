@@ -3,35 +3,35 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
+using System.Security.Principal;
 using System.Text;
 using System.Threading.Tasks;
 
 namespace Project.HR.Data.Models
 {
-    public class Position
+    public class Department
     {
+
         public int Id { get; set; }
 
         [Required, MaxLength(100)]
-        public string Title { get; set; } = string.Empty;
+        public string Name { get; set; } = string.Empty;
 
         [MaxLength(10)]
         public string Code { get; set; } = string.Empty;
 
-        [MaxLength(1000)]
+        [MaxLength(500)]
         public string Description { get; set; } = string.Empty;
 
-        [Column(TypeName = "decimal(10,2)")]
-        public decimal MinSalary { get; set; }
+        public int? ParentDepartmentId { get; set; }
 
-        [Column(TypeName = "decimal(10,2)")]
-        public decimal MaxSalary { get; set; }
-
-        public EmploymentType EmploymentType { get; set; }
-        public int DepartmentId { get; set; }
+        [Column(TypeName = "decimal(12,2)")]
+        public decimal Budget { get; set; }
 
         // Navigation Properties
-        public Department Department { get; set; } = null!;
+        public Department? ParentDepartment { get; set; }
+        public List<Department> SubDepartments { get; set; } = new();
         public List<Employee> Employees { get; set; } = new();
+        public List<Position> Positions { get; set; } = new();
     }
 }

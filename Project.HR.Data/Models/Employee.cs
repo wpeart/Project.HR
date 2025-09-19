@@ -11,7 +11,10 @@ namespace Project.HR.Data.Models
     public class Employee
     {
         public int UserId { get; set; }
+        [Required, MaxLength(30)]
         public string UserName { get; set; }
+
+        [Required, MaxLength(50)]
         public string Password { get; set; }
         [Required, MaxLength(50)]
         public string FirstName { get; set; } = string.Empty;
@@ -55,16 +58,22 @@ namespace Project.HR.Data.Models
         [MaxLength(20)]
         public string? EmergencyContactPhone { get; set; }
 
+        public int RoleId { get; set; }
+        public int DepartmentId { get; set; }
+        public int? ManagerId { get; set; }
+        public int PositionId { get; set; }
+
+
         public Position Position { get; set; } = null!;
         public Employee? Manager { get; set; }
         public List<Employee> DirectReports { get; set; } = new();
         public List<Salary> Salaries { get; set; } = new();
         public List<Leave> Leaves { get; set; } = new();
+        public Department Department { get; set; } = null!;
 
 
 
-        public int RoleId { get; set; }
-        public int DepartmentId { get; set; }
+       
 
     }
 }
