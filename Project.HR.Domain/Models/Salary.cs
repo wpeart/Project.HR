@@ -1,4 +1,6 @@
-﻿using System;
+﻿using Project.HR.Domain.Enums;
+using Project.HR.Domain.Models;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -6,7 +8,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Project.HR.Data.Models
+namespace Project.HR.Domain.Models
 {
     public class Salary
     {

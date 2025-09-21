@@ -1,12 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using Project.HR.Domain.Enums;
 using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Security.Permissions;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace Project.HR.Data.Models
+namespace Project.HR.Domain.Models
 {
     public class Employee
     {
@@ -71,9 +66,10 @@ namespace Project.HR.Data.Models
         public List<Leave> Leaves { get; set; } = new();
         public Department Department { get; set; } = null!;
 
+        public UserRoles UserRole { get; set; } // Navigation property
 
 
-       
+
 
     }
 }

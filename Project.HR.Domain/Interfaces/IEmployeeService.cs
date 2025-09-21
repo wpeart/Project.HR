@@ -1,13 +1,13 @@
-﻿using Project.HR.Data.Models;
+﻿using Project.HR.Domain.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Project.HR.Domain
+namespace Project.HR.Domain.Interfaces
 {
-    internal interface IEmployeeService
+    public interface IEmployeeService
     {
         Task<Employee?> GetEmployeeByIdAsync(int id);
         Task<Employee?> GetEmployeeByEmployeeIdAsync(string employeeId);

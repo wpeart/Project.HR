@@ -1,15 +1,16 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Project.HR.Domain.Models;
 
 namespace Project.HR.Data.Models
 {
     public class HRDbContext : DbContext
     {
-        DbSet<Employee> Employees { get; set; }
-        DbSet<Department> Departments { get; set; }
-        DbSet<Position> Positions { get; set; }
-        DbSet<Salary> Salaries { get; set; }
-        DbSet<Leave> Leaves { get; set; }
-        DbSet<UserRoles> UserRoles { get; set; }
+        public DbSet<Employee> Employees { get; set; }
+        public DbSet<Department> Departments { get; set; }
+        public DbSet<Position> Positions { get; set; }
+        public DbSet<Salary> Salaries { get; set; }
+        public DbSet<Leave> Leaves { get; set; }
+        public DbSet<UserRoles> UserRoles { get; set; }
 
 
         public HRDbContext(DbContextOptions<HRDbContext> options) : base(options)
@@ -18,27 +19,44 @@ namespace Project.HR.Data.Models
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            modelBuilder.Entity<UserRoles>(entity =>
+            {
+                entity.HasKey(ur => ur.RoleId);
+                entity.HasIndex(ur => ur.RoleName).IsUnique();
+
+                // Configure the relationship from UserRoles side
+                entity.HasMany(ur => ur.Employees)
+                      .WithOne(e => e.UserRole)
+                      .HasForeignKey(e => e.RoleId)
+                      .OnDelete(DeleteBehavior.Restrict);
+            });
+
+            // Employee configuration
             modelBuilder.Entity<Employee>(entity =>
             {
                 entity.HasKey(e => e.UserId);
                 entity.HasIndex(e => e.UserName).IsUnique();
                 entity.HasIndex(e => e.Email).IsUnique();
 
+                // Manager relationship
                 entity.HasOne(e => e.Manager)
                       .WithMany(e => e.DirectReports)
                       .HasForeignKey(e => e.ManagerId)
                       .OnDelete(DeleteBehavior.Restrict);
 
+                // Department relationship
                 entity.HasOne(e => e.Department)
-                .WithMany(d => Employees)
-                .HasForeignKey(e => e.DepartmentId)
-                .OnDelete(DeleteBehavior.Restrict);
+                      .WithMany(d => d.Employees)
+                      .HasForeignKey(e => e.DepartmentId)
+                      .OnDelete(DeleteBehavior.Restrict);
 
+                // Position relationship
                 entity.HasOne(e => e.Position)
-                       .WithMany(p => p.Employees)
-                       .HasForeignKey(e => e.PositionId)
-                       .OnDelete(DeleteBehavior.Restrict);
+                      .WithMany(p => p.Employees)
+                      .HasForeignKey(e => e.PositionId)
+                      .OnDelete(DeleteBehavior.Restrict);
 
+                
             });
 
             modelBuilder.Entity<Department>(entity =>

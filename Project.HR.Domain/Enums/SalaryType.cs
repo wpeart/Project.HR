@@ -4,13 +4,12 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Project.HR.Data.Models
+namespace Project.HR.Domain.Enums
 {
-    public enum LeaveStatus
+    public enum SalaryType
     {
-        Pending,
-        Approved,
-        Rejected,
-        Cancelled
+        Hourly,
+        Monthly,
+        Annual
     }
 }

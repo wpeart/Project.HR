@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Project.HR.Data.Models
+namespace Project.HR.Domain.Enums
 {
     public enum LeaveType
     {
