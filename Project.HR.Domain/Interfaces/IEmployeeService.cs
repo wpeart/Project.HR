@@ -1,9 +1,4 @@
 ﻿using Project.HR.Domain.Models;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Project.HR.Domain.Interfaces
 {
@@ -15,7 +10,7 @@ namespace Project.HR.Domain.Interfaces
         Task<List<Employee>> GetEmployeesByDepartmentAsync(int departmentId);
         Task<List<Employee>> GetDirectReportsAsync(int managerId);
         Task<Employee> CreateEmployeeAsync(Employee employee);
-        Task<Employee> UpdateEmployeeAsync(Employee employee);
+        Task<Employee> UpdateEmployeeAsync(int id, Employee employee);
         Task<bool> TerminateEmployeeAsync(int employeeId, DateTime terminationDate, string reason);
     }
 }

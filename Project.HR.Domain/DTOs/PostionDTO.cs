@@ -1,5 +1,5 @@
-﻿using Project.HR.Domain.Enums;
-using Project.HR.Domain.Models;
+﻿
+using Project.HR.Domain.Enums;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -8,12 +8,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Project.HR.Domain.Models
+namespace Project.HR.Domain.DTOs
 {
-    public class Position
+    public class PostionDTO
     {
-        public int Id { get; set; }
-
         [Required, MaxLength(100)]
         public string Title { get; set; } = string.Empty;
 
@@ -32,10 +30,5 @@ namespace Project.HR.Domain.Models
         public int DepartmentId { get; set; }
 
         public EmploymentType EmploymentType { get; set; }
-    
-
-        // Navigation Properties
-        public Department Department { get; set; } = null!;
-        public List<Employee> Employees { get; set; } = new();
     }
 }

@@ -16,6 +16,8 @@ options.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection")
 
 builder.Services.AddScoped<IEmployeeService, EmployeeDAL>();
 builder.Services.AddScoped<IRoleService, RolesDAL>();
+builder.Services.AddScoped<IDepartmentService, DepartmentDAL>();
+builder.Services.AddScoped<IPositionService, PositionDAL>();
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(c =>
@@ -54,8 +56,9 @@ app.UseHttpsRedirection();
 //app.UseAuthorization();
 
 app.MapRoleEndpoints();
-
-
+app.MapPositionEndpoints();
+app.MapDepartmentEndpoints();
+app.MapEmployeeEndpoints();
 
 
 app.Run();
