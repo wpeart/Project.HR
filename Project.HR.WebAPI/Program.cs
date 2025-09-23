@@ -40,8 +40,8 @@ var app = builder.Build();
 
 
 // Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
-{
+/*if (app.Environment.IsDevelopment())
+{*/
     app.UseSwagger();
     app.MapOpenApi();
     app.UseSwaggerUI(c =>
@@ -50,7 +50,7 @@ if (app.Environment.IsDevelopment())
         c.RoutePrefix = string.Empty; // Makes Swagger UI available at root (/)
         // Or use: c.RoutePrefix = "swagger"; // Available at /swagger
     });
-}
+//}
 
 app.UseHttpsRedirection();
 //app.UseAuthorization();
