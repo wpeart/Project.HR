@@ -17,7 +17,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Project.HR.Domain", "Projec
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Project.HR.WebAPI", "Project.HR.WebAPI\Project.HR.WebAPI.csproj", "{1BBE52B3-E9CD-43BB-BB60-A7C2BE48E384}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Project.HR.UnitTest", "Project.HR.UnitTest\Project.HR.UnitTest.csproj", "{D6FAB45B-2116-463C-9E81-C8A56D681FC6}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Project.HR.DataTests", "Project.HR.DataTests\Project.HR.DataTests.csproj", "{B06482BD-ED82-46DB-AA84-FB4582FB5EE7}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Presentation", "Presentation", "{86A05C78-E9BC-4D77-AE86-BCFE84FD1B19}"
 EndProject
@@ -41,6 +41,10 @@ Global
 		{1BBE52B3-E9CD-43BB-BB60-A7C2BE48E384}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{1BBE52B3-E9CD-43BB-BB60-A7C2BE48E384}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{1BBE52B3-E9CD-43BB-BB60-A7C2BE48E384}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B06482BD-ED82-46DB-AA84-FB4582FB5EE7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B06482BD-ED82-46DB-AA84-FB4582FB5EE7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B06482BD-ED82-46DB-AA84-FB4582FB5EE7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B06482BD-ED82-46DB-AA84-FB4582FB5EE7}.Release|Any CPU.Build.0 = Release|Any CPU
 		{D6FAB45B-2116-463C-9E81-C8A56D681FC6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{D6FAB45B-2116-463C-9E81-C8A56D681FC6}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D6FAB45B-2116-463C-9E81-C8A56D681FC6}.Release|Any CPU.ActiveCfg = Release|Any CPU
