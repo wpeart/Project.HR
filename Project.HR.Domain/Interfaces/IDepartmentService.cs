@@ -8,7 +8,7 @@ namespace Project.HR.Domain.Interfaces
         
         Task<Department> CreateDepartmentAsync(Department department);
         Task<Department?> GetDepartmentByNameAsync(string departmentName);
-        Task<bool> DeleteDepartmentAsync(string departmentName);
+        Task<bool> DeleteDepartmentAsync(int id);
         Task<Department?> UpdateDepartmentAsync(int id, Department department);
     }
 }

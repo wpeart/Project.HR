@@ -11,7 +11,7 @@ namespace Project.HR.WebAPI.Endpoints
 
         public static void MapPositionEndpoints(this WebApplication app)
         {
-            var group = app.MapGroup("/positions").WithTags("Positions");
+            var group = app.MapGroup("/api/positions").WithTags("Positions");
 
             group.MapGet("/", async (IPositionService positionService) =>
             {

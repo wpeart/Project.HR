@@ -103,16 +103,13 @@ namespace Project.HR.WebAPI.Endpoints
                 .Produces(StatusCodes.Status404NotFound)
                 .ProducesProblem(StatusCodes.Status500InternalServerError);
 
-            group.MapDelete("/{departmentName}", async (string departmentName, IDepartmentService departmentService) =>
+            group.MapDelete("/{id}", async (int id, IDepartmentService departmentService) =>
             {
                 try
                 {
-                    if (string.IsNullOrEmpty(departmentName))
-                    {
-                        return Results.BadRequest("Department Name is required!");
-                    }
+                    
 
-                    await departmentService.DeleteDepartmentAsync(departmentName);
+                    await departmentService.DeleteDepartmentAsync(id);
                     return Results.NoContent();
 
                 }

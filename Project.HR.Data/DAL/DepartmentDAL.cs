@@ -24,10 +24,10 @@ namespace Project.HR.Data.DAL
             return department;
         }
 
-        public async Task<bool> DeleteDepartmentAsync(string departmentName)
+        public async Task<bool> DeleteDepartmentAsync(int id)
         {
             await _context.Departments
-                 .Where(d => d.Name == departmentName)
+                 .Where(d => d.Id == id)
                  .ExecuteDeleteAsync();
             return true;
         }

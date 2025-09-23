@@ -1,0 +1,342 @@
+﻿@page "/position"
+@using Project.HR.Domain.DTOs
+@using Project.HR.Domain.Enums
+@using Project.HR.Domain.Helpers
+@using Project.HR.UI.Blazor.Helpers
+
+<h3>Position</h3>
+@rendermode InteractiveServer
+
+@inject IHttpClientFactory ClientFactory
+
+
+<div class="container text-center">
+    <div class="row">
+        <div class="col">
+            <button id="btnRefresh" class="btn btn-info" @onclick="LoadPositions">Refresh</button>
+        </div>
+        <div class="col">
+            <button id="btnCreate" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#createModal">Create a position</button>
+
+        </div>
+
+    </div>
+</div>
+<br />
+<br />
+@if (positions is null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+
+    <table class="table table-bordered table-hover">
+        <thead>
+            <tr>
+                <th></th>
+                <th></th>
+                <th>
+                    ID
+                </th>
+                <th>
+                    Title
+                </th>
+                <th>
+                    Code
+                </th>
+                <th>
+                    Description
+                </th>
+                <th>
+                    MinSalary
+                </th>
+                <th>
+                    MaxSalary
+                </th>
+                <th>
+                    Department Id
+                </th>
+
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var pos in positions)
+            {
+                <tr>
+                    <td><button class="bnt btn-primary" @onclick="() => OnEditClicked(pos)" id="@pos.Id">Edit</button></td>
+                    <td>   <button class="btn btn-danger" @onclick="() => ConfirmDelete(pos)">Delete</button></td>
+                    <td>@pos.Id</td>
+                    <td>@pos.Title</td>
+                    <td>@pos.Code</td>
+                    <td>@pos.Description</td>
+                    <td>@pos.MinSalary</td>
+                    <td>@pos.MaxSalary</td>
+                    <td>@pos.DepartmentId</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+<div class="modal fade" id="createModal" tabindex="-1" role="dialog" aria-labelledby="createModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="createModalLabel">Create Position</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+
+            </div>
+            <div class="modal-body">
+                <div class="mb-3">
+                    <label for="positionTitle" class="form-label">Title</label>
+                    <InputText type="text" class="form-control" @bind-Value="pos.Title"></InputText>
+                </div>
+                <div class="mb-3">
+                    <label for="positionCode" class="form-label">Code</label>
+                    <InputText type="text" class="form-control" @bind-Value="pos.Code"></InputText>
+                </div>
+                <div class="mb-3">
+                     <label for="positionDescription" class="form-label">Description</label>
+                     <InputText type="text" class="form-control" @bind-Value="pos.Description"></InputText>
+                 </div>
+                  <div class="mb-3">
+                     <label for="positionEmploymentType" class="form-label">EmploymentType</label>
+                    <InputSelect class="form-select" @bind-Value="pos.EmploymentType">
+                        <option value="">Select Employment Type</option>
+                        @foreach (var type in Enum.GetValues(typeof(EmploymentType)).Cast<EmploymentType>())
+                        {
+                            <option value="@type">@type</option>
+                        }
+                        </InputSelect>
+                 </div>
+                   <div class="mb-3">
+                     <label for="positionDepartmentId" class="form-label">DepartmentId</label>
+                    <InputSelect class="form-select" @bind-Value="pos.DepartmentId">
+                        <option value="">Select Department</option>
+                         
+                        @foreach (var dept in departments)
+                        {
+                            <option value="@dept.Id">@dept.Name</option>
+                        }
+                       
+                    </InputSelect>
+                 </div>
+                <div class="mb-3">
+                     <label for="positionMinSalary" class="form-label">MinSalary</label>
+                     <InputNumber class="form-control" @bind-Value="pos.MinSalary" TValue="decimal"></InputNumber>
+                 </div>
+                 <div class="mb-3">
+                     <label for="positionMaxSalary" class="form-label">MaxSalary</label>
+                     <InputNumber class="form-control" @bind-Value="pos.MaxSalary" TValue="decimal"></InputNumber>
+                 </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" data-bs-dismiss="modal" @onclick="CreatePosition">Save changes</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="editModal" tabindex="-1" role="dialog" aria-labelledby="editModal" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="editModalLabel">Update Position</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+
+            </div>
+            <div class="modal-body">
+                <div class="mb-3">
+                    <label for="positionTitle" class="form-label">Title</label>
+                    <InputText type="text" class="form-control" @bind-Value="selectedPosition.Title"></InputText>
+                </div>
+                <div class="mb-3">
+                    <label for="positionCode" class="form-label">Code</label>
+                    <InputText type="text" class="form-control" @bind-Value="selectedPosition.Code"></InputText>
+                </div>
+                 <div class="mb-3">
+                     <label for="positionDescription" class="form-label">Description</label>
+                     <InputText type="text" class="form-control" @bind-Value="selectedPosition.Description"></InputText>
+                 </div>
+                 <div class="mb-3">
+                     <label for="positionMinSalary" class="form-label">MinSalary</label>
+                     <InputNumber class="form-control" @bind-Value="selectedPosition.MinSalary"></InputNumber>
+                 </div>
+                 <div class="mb-3">
+                     <label for="positionMaxSalary" class="form-label">MaxSalary</label>
+                     <InputNumber class="form-control" @bind-Value="selectedPosition.MaxSalary" ></InputNumber>
+                 </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" data-bs-dismiss="modal" @onclick="UpdatePosition">Save changes</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@if (!string.IsNullOrEmpty(errMessage))
+{
+    <div class="alert alert-danger">@errMessage</div>
+}
+@code {
+    List<PostionDTO> positions = new List<PostionDTO>();
+    PostionDTO pos = new PostionDTO();
+    PostionDTO selectedPosition = new PostionDTO();
+    string errMessage = string.Empty;
+    List<EmploymentType> employmentType = new();
+    List<DepartmentDTO> departments = new List<DepartmentDTO>();    
+
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            await LoadPositions();
+            await LoadDepartments();
+        }
+        catch (Exception ex)
+        {
+            LogErrorHelper.LogError(null, ex, LogErrorHelper.ErrorLevel.Error, "Position.razor - OnInitializedAsync");
+            errMessage = "Error loading positions: " + ex.Message;
+
+        }
+    }
+   private async Task LoadDepartments()
+    {
+        try
+        {
+            DepartmentHelper departmentHelper = new DepartmentHelper(ClientFactory);
+            departments = await departmentHelper.GetAllDepartments();
+        }
+        catch (Exception ex)
+        {
+            LogErrorHelper.LogError(null, ex, LogErrorHelper.ErrorLevel.Error, "Position.razor - LoadDepartments");
+            errMessage = "Error loading departments: " + ex.Message;
+        }
+    }  
+    private void LoadEmploymentTypes()
+    {
+        employmentType = Enum.GetValues(typeof(EmploymentType)).Cast<EmploymentType>().ToList();
+    }
+    private async Task OnEditClicked(PostionDTO pos)
+    {
+        try
+        {
+            // Logic to handle edit action
+            await JS.InvokeVoidAsync("alert", $"Edit clicked for Position ID: {pos.Id}");
+        }
+        catch (Exception ex)
+        {
+            LogErrorHelper.LogError(null, ex, LogErrorHelper.ErrorLevel.Error, "Position.razor - OnEditClicked");
+            errMessage = "Error handling edit: " + ex.Message;
+
+        }
+    }
+
+    private async Task ConfirmDelete(PostionDTO pos)
+    {
+        try
+        {
+            bool confirmed = await JS.InvokeAsync<bool>("confirm", $"Are you sure you want to delete Position ID: {pos.Id}?");
+            if (confirmed)
+            {
+                PositionHelper positionHelper = new PositionHelper(ClientFactory);
+                bool isDeleted = await positionHelper.DeletePositionAsync(Convert.ToInt32(pos.Id));
+                if (isDeleted)
+                {
+                    positions.Remove(pos);
+                    await JS.InvokeVoidAsync("alert", "Position deleted successfully.");
+                }
+                else
+                {
+                    await JS.InvokeVoidAsync("alert", "Failed to delete the position.");
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            LogErrorHelper.LogError(null, ex, LogErrorHelper.ErrorLevel.Error, "Position.razor - ConfirmDelete");
+            errMessage = "Error deleting position: " + ex.Message;
+        }
+    }
+
+    private async Task OnCreateClicked()
+    {
+        try
+        {
+            // Logic to handle create action
+            // This could involve opening a modal dialog for input
+            JS.InvokeVoidAsync("alert", "Create button clicked");
+        }
+        catch (Exception ex)
+        {
+            LogErrorHelper.LogError(null, ex, LogErrorHelper.ErrorLevel.Error, "Position.razor - OnCreateClicked");
+            errMessage = "Error handling create: " + ex.Message;
+        }
+    }
+
+    private async Task LoadPositions()
+    {
+        PositionHelper positionHelper = new PositionHelper(ClientFactory);
+        positions = await positionHelper.GetAllPositions();
+
+
+    }
+
+    private async Task CreatePosition()
+    {
+        try
+        {
+            PositionHelper positionHelper = new PositionHelper(ClientFactory);
+            var createdPosition = await positionHelper.CreatePositionAsync(pos);
+            if (createdPosition != null)
+            {
+                positions.Add(createdPosition);
+                pos = new PostionDTO(); // Reset the form
+                await JS.InvokeVoidAsync("alert", "Position created successfully.");
+            }
+            else
+            {
+                await JS.InvokeVoidAsync("alert", "Failed to create position.");
+            }
+        }
+        catch (Exception ex)
+        {
+            LogErrorHelper.LogError(null, ex, LogErrorHelper.ErrorLevel.Error, "Position.razor - CreatePosition");
+            errMessage = "Error creating position: " + ex.Message;
+
+        }
+    }
+
+    private async Task UpdatePosition()
+    {
+        try
+        {
+            PositionHelper positionHelper = new PositionHelper(ClientFactory);
+            var updatedPosition = await positionHelper.UpdatePositionAsync(selectedPosition);
+            if (updatedPosition != null)
+            {
+                var index = positions.FindIndex(p => p.Id == updatedPosition.Id);
+                if (index != -1)
+                {
+                    positions[index] = updatedPosition;
+                }
+                await JS.InvokeVoidAsync("alert", "Position updated successfully.");
+            }
+            else
+            {
+                await JS.InvokeVoidAsync("alert", "Failed to update position.");
+            }
+        }
+        catch (Exception ex)
+        {
+            LogErrorHelper.LogError(null, ex, LogErrorHelper.ErrorLevel.Error, "Position.razor - UpdatePosition");
+            errMessage = "Error updating position: " + ex.Message;
+        }
+    }
+
+    [Inject] IJSRuntime JS { get; set; }
+
+}
