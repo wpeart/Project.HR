@@ -227,6 +227,7 @@ else
             {
                 departments.Add(createdDept);
             }
+            department = new DepartmentDTO(); /*resets form contents*/
             await JS.InvokeVoidAsync("alert", "Department created successfully!");
             return createdDept;
         }

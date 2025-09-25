@@ -96,39 +96,39 @@ else
                     <InputText type="text" class="form-control" @bind-Value="pos.Code"></InputText>
                 </div>
                 <div class="mb-3">
-                     <label for="positionDescription" class="form-label">Description</label>
-                     <InputText type="text" class="form-control" @bind-Value="pos.Description"></InputText>
-                 </div>
-                  <div class="mb-3">
-                     <label for="positionEmploymentType" class="form-label">EmploymentType</label>
+                    <label for="positionDescription" class="form-label">Description</label>
+                    <InputText type="text" class="form-control" @bind-Value="pos.Description"></InputText>
+                </div>
+                <div class="mb-3">
+                    <label for="positionEmploymentType" class="form-label">EmploymentType</label>
                     <InputSelect class="form-select" @bind-Value="pos.EmploymentType">
                         <option value="">Select Employment Type</option>
                         @foreach (var type in Enum.GetValues(typeof(EmploymentType)).Cast<EmploymentType>())
                         {
                             <option value="@type">@type</option>
                         }
-                        </InputSelect>
-                 </div>
-                   <div class="mb-3">
-                     <label for="positionDepartmentId" class="form-label">DepartmentId</label>
+                    </InputSelect>
+                </div>
+                <div class="mb-3">
+                    <label for="positionDepartmentId" class="form-label">DepartmentId</label>
                     <InputSelect class="form-select" @bind-Value="pos.DepartmentId">
                         <option value="">Select Department</option>
-                         
+
                         @foreach (var dept in departments)
                         {
                             <option value="@dept.Id">@dept.Name</option>
                         }
-                       
+
                     </InputSelect>
-                 </div>
+                </div>
                 <div class="mb-3">
-                     <label for="positionMinSalary" class="form-label">MinSalary</label>
-                     <InputNumber class="form-control" @bind-Value="pos.MinSalary" TValue="decimal"></InputNumber>
-                 </div>
-                 <div class="mb-3">
-                     <label for="positionMaxSalary" class="form-label">MaxSalary</label>
-                     <InputNumber class="form-control" @bind-Value="pos.MaxSalary" TValue="decimal"></InputNumber>
-                 </div>
+                    <label for="positionMinSalary" class="form-label">MinSalary</label>
+                    <InputNumber class="form-control" @bind-Value="pos.MinSalary" TValue="decimal"></InputNumber>
+                </div>
+                <div class="mb-3">
+                    <label for="positionMaxSalary" class="form-label">MaxSalary</label>
+                    <InputNumber class="form-control" @bind-Value="pos.MaxSalary" TValue="decimal"></InputNumber>
+                </div>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
@@ -155,18 +155,18 @@ else
                     <label for="positionCode" class="form-label">Code</label>
                     <InputText type="text" class="form-control" @bind-Value="selectedPosition.Code"></InputText>
                 </div>
-                 <div class="mb-3">
-                     <label for="positionDescription" class="form-label">Description</label>
-                     <InputText type="text" class="form-control" @bind-Value="selectedPosition.Description"></InputText>
-                 </div>
-                 <div class="mb-3">
-                     <label for="positionMinSalary" class="form-label">MinSalary</label>
-                     <InputNumber class="form-control" @bind-Value="selectedPosition.MinSalary"></InputNumber>
-                 </div>
-                 <div class="mb-3">
-                     <label for="positionMaxSalary" class="form-label">MaxSalary</label>
-                     <InputNumber class="form-control" @bind-Value="selectedPosition.MaxSalary" ></InputNumber>
-                 </div>
+                <div class="mb-3">
+                    <label for="positionDescription" class="form-label">Description</label>
+                    <InputText type="text" class="form-control" @bind-Value="selectedPosition.Description"></InputText>
+                </div>
+                <div class="mb-3">
+                    <label for="positionMinSalary" class="form-label">MinSalary</label>
+                    <InputNumber class="form-control" @bind-Value="selectedPosition.MinSalary"></InputNumber>
+                </div>
+                <div class="mb-3">
+                    <label for="positionMaxSalary" class="form-label">MaxSalary</label>
+                    <InputNumber class="form-control" @bind-Value="selectedPosition.MaxSalary"></InputNumber>
+                </div>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
@@ -186,7 +186,7 @@ else
     PostionDTO selectedPosition = new PostionDTO();
     string errMessage = string.Empty;
     List<EmploymentType> employmentType = new();
-    List<DepartmentDTO> departments = new List<DepartmentDTO>();    
+    List<DepartmentDTO> departments = new List<DepartmentDTO>();
 
 
     protected override async Task OnInitializedAsync()
@@ -203,7 +203,7 @@ else
 
         }
     }
-   private async Task LoadDepartments()
+    private async Task LoadDepartments()
     {
         try
         {
@@ -215,7 +215,7 @@ else
             LogErrorHelper.LogError(null, ex, LogErrorHelper.ErrorLevel.Error, "Position.razor - LoadDepartments");
             errMessage = "Error loading departments: " + ex.Message;
         }
-    }  
+    }
     private void LoadEmploymentTypes()
     {
         employmentType = Enum.GetValues(typeof(EmploymentType)).Cast<EmploymentType>().ToList();
@@ -308,6 +308,7 @@ else
             errMessage = "Error creating position: " + ex.Message;
 
         }
+        await LoadPositions();
     }
 
     private async Task UpdatePosition()
@@ -335,6 +336,8 @@ else
             LogErrorHelper.LogError(null, ex, LogErrorHelper.ErrorLevel.Error, "Position.razor - UpdatePosition");
             errMessage = "Error updating position: " + ex.Message;
         }
+        await LoadPositions();
+
     }
 
     [Inject] IJSRuntime JS { get; set; }
