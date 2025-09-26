@@ -220,12 +220,13 @@ else
     {
         employmentType = Enum.GetValues(typeof(EmploymentType)).Cast<EmploymentType>().ToList();
     }
-    private async Task OnEditClicked(PostionDTO pos)
+    private void OnEditClicked(PostionDTO pos)
     {
         try
         {
-            // Logic to handle edit action
-            await JS.InvokeVoidAsync("alert", $"Edit clicked for Position ID: {pos.Id}");
+            selectedPosition = pos;
+            JS.InvokeVoidAsync("bootstrapInterop.showModal", "#editModal");
+
         }
         catch (Exception ex)
         {
@@ -262,20 +263,7 @@ else
         }
     }
 
-    private async Task OnCreateClicked()
-    {
-        try
-        {
-            // Logic to handle create action
-            // This could involve opening a modal dialog for input
-            JS.InvokeVoidAsync("alert", "Create button clicked");
-        }
-        catch (Exception ex)
-        {
-            LogErrorHelper.LogError(null, ex, LogErrorHelper.ErrorLevel.Error, "Position.razor - OnCreateClicked");
-            errMessage = "Error handling create: " + ex.Message;
-        }
-    }
+   
 
     private async Task LoadPositions()
     {

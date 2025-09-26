@@ -30,10 +30,10 @@ namespace Project.HR.Data.DAL
             return position;
         }
 
-        public async Task<bool> DeletePositionAsync(string positionName)
+        public async Task<bool> DeletePositionAsync(int id)
         {
             await _context.Positions
-                 .Where(p => p.Title == positionName)
+                 .Where(p => p.Id == id)
                  .ExecuteDeleteAsync();
             return true;
         }
@@ -57,10 +57,10 @@ namespace Project.HR.Data.DAL
             throw new NotImplementedException();
         }
 
-        public async Task<Position?> UpdatePositionAsync(string positionName, Position position)
+        public async Task<Position?> UpdatePositionAsync(int id, Position position)
         {
             await _context.Positions
-                 .Where(p => p.Title == positionName)
+                 .Where(p => p.Id == id)
                  .ExecuteUpdateAsync(p => p
                      .SetProperty(p => p.Title, position.Title)
                      .SetProperty(p => p.Description, position.Description)

@@ -8,8 +8,8 @@ namespace Project.HR.Domain.Interfaces
         Task<bool> IsPositionAvailableAsync(string positionName);
         Task<Position> CreatePositionAsync(Position position);
         Task<Position?> GetPositionByNameAsync(string positionName);
-        Task<bool> DeletePositionAsync(string positionName);
-        Task<Position?> UpdatePositionAsync(string positionName, Position position);
+        Task<bool> DeletePositionAsync(int id);
+        Task<Position?> UpdatePositionAsync(int id, Position position);
 
 
     }
