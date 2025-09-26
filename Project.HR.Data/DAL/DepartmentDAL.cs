@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Project.HR.Data.Models;
+using Project.HR.Domain.DTOs;
 using Project.HR.Domain.Interfaces;
 using Project.HR.Domain.Models;
 
@@ -32,11 +33,42 @@ namespace Project.HR.Data.DAL
             return true;
         }
 
-        public async Task<List<Department>> GetAllDepartmentsAsync()
+        public async Task<List<DepartmentDTO?>> GetAllDepartmentsAsync()
         {
-            return await _context.Departments
-                  .AsNoTracking()
-                  .ToListAsync();
+            var department = await _context.Departments
+                  .Select(d => new DepartmentDTO
+                  {
+                      Id = d.Id,
+                      Name = d.Name,
+                      Code = d.Code,
+                      Description = d.Description,
+                      ParentDepartmentId = d.ParentDepartmentId,
+                      Budget = d.Budget,
+                      ParentDepartmentName = d.ParentDepartment != null ? d.ParentDepartment.Name : null
+                  })
+        .ToListAsync();
+            return department;
+        }
+
+        public async Task<DepartmentDTO?> GetDepartmentByIdAsync(int id)
+        {
+            var department = await _context.Departments
+                .AsNoTracking()
+                .Include(d => d.ParentDepartment)
+                .FirstOrDefaultAsync(d => d.Id == id);
+
+            if (department == null) return null;
+
+            return new DepartmentDTO
+            {
+                Id = department.Id,
+                Name = department.Name,
+                Code = department.Code,
+                Description = department.Description,
+                ParentDepartmentId = department.ParentDepartmentId,
+                Budget = department.Budget,
+                ParentDepartmentName = department.ParentDepartment?.Name
+            };
         }
 
         public async Task<Department?> GetDepartmentByNameAsync(string departmentName)

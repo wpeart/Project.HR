@@ -46,6 +46,25 @@ namespace Project.HR.WebAPI.Endpoints
                 .Produces(StatusCodes.Status404NotFound)
                 .ProducesProblem(StatusCodes.Status500InternalServerError)
                 .Accepts<string>("application/json");
+
+            group.MapGet("/{id:int}", async (int id, IDepartmentService departmentService) =>
+            {
+                try
+                {
+                    var department = await departmentService.GetDepartmentByIdAsync(id);
+                    return department is not null ? Results.Ok(department) : Results.NotFound();
+                }
+                catch (Exception ex)
+                {
+                    LogErrorHelper.LogError("Error fetching department by id", ex, LogErrorHelper.ErrorLevel.Error, "Get Department By Id");
+                    return Results.Problem("An error occurred while fetching the department.");
+                }
+            })
+                .WithName("GetDepartmentById")
+                .Produces<Department>(StatusCodes.Status200OK)
+                .Produces(StatusCodes.Status404NotFound)
+                .ProducesProblem(StatusCodes.Status500InternalServerError);
+                
             group.MapPost("/", async (DepartmentDTO departmentDto, IDepartmentService departmentService) =>
             {
                 try

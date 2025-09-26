@@ -10,7 +10,7 @@ namespace Project.HR.Domain.DTOs
 {
     public class DepartmentDTO
     {
-        public int? Id { get; set; } 
+        public int? Id { get; set; }
 
         [Required, MaxLength(100)]
         public string Name { get; set; } = string.Empty;
@@ -25,5 +25,6 @@ namespace Project.HR.Domain.DTOs
 
         [Column(TypeName = "decimal(12,2)")]
         public decimal Budget { get; set; }
+        public string? ParentDepartmentName { get; set; }
     }
 }

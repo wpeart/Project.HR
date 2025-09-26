@@ -15,33 +15,41 @@ namespace Project.HR.UI.Blazor.Helpers
             _clientFactory = clientFactory;
         }
 
-        public async Task<List<DepartmentDTO>> GetAllDepartments()
+        public async Task<List<DepartmentDTO>?> GetAllDepartments()
         {
-            List<Department> departments = new List<Department>();
+            List<DepartmentDTO>? departments = new List<DepartmentDTO>();
 
             var client = _clientFactory.CreateClient("HRApiClient");
 
-            departments = await client.GetFromJsonAsync<List<Department>>("api/departments");
-            List<DepartmentDTO> departmentDTOs = new List<DepartmentDTO>();
+            departments = await client.GetFromJsonAsync<List<DepartmentDTO>>("api/departments");
 
-            foreach (var dept in departments)
-            {
-                DepartmentDTO dto = new DepartmentDTO
-                {
-                    Name = dept.Name,
-                    Code = dept.Code,
-                    Description = dept.Description,
-                    ParentDepartmentId = dept.ParentDepartmentId,
-                    Budget = dept.Budget,
-                    Id = dept.Id
-                };
-                departmentDTOs.Add(dto);
-            }
 
-            return departmentDTOs;
+
+
+            return departments;
 
         }
 
+        public async Task<DepartmentDTO> GetDepartmentById(int id)
+        {
+            DepartmentDTO ret = new DepartmentDTO();
+
+            var client = _clientFactory.CreateClient("HRApiClient");
+
+            var response = await client.GetAsync($"api/departments/{id}");
+
+            response.EnsureSuccessStatusCode();
+
+            string strResponse = await response.Content.ReadAsStringAsync();
+
+            LogErrorHelper.LogError(strResponse, null, LogErrorHelper.ErrorLevel.Trace);
+            ret = JsonSerializer.Deserialize<DepartmentDTO>(strResponse, new JsonSerializerOptions
+            {
+                PropertyNameCaseInsensitive = true
+            }) ?? new DepartmentDTO();
+            return ret;
+
+        }
 
         public async Task<DepartmentDTO> CreateDepartmentAsync(DepartmentDTO department)
         {
@@ -51,6 +59,10 @@ namespace Project.HR.UI.Blazor.Helpers
 
             if (department != null)
             {
+                if (department.ParentDepartmentId == 0)
+                {
+                    department.ParentDepartmentId = null;
+                }
                 var response = await client.PostAsJsonAsync("api/departments", department);
                 response.EnsureSuccessStatusCode();
 
@@ -74,6 +86,10 @@ namespace Project.HR.UI.Blazor.Helpers
 
             if (department != null)
             {
+                if (department.ParentDepartmentId == 0)
+                {
+                    department.ParentDepartmentId = null;
+                }
                 var response = await client.PutAsJsonAsync($"api/departments/{id}", department);
                 response.EnsureSuccessStatusCode();
 

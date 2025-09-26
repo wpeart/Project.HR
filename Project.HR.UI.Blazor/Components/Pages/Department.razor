@@ -66,7 +66,7 @@ else
                     <td>@dept.Name</td>
                     <td>@dept.Code</td>
                     <td>@dept.Description</td>
-                    <td>@dept.ParentDepartmentId</td>
+                    <td>@dept.ParentDepartmentName</td>
                     <td>@dept.Budget.ToString("C")</td>
                 </tr>
             }
@@ -90,6 +90,16 @@ else
                 <div class="mb-3">
                     <label for="departmentCode" class="form-label">Code</label>
                     <InputText type="text" class="form-control" @bind-Value="department.Code"></InputText>
+                </div>
+                <div class="mb-3">
+                    <label for="departmentParent" class="form-label">Parent Department</label>
+                    <select class="form-select" @bind="department.ParentDepartmentId">
+                        <option value=0>-- Select Parent Department --</option>
+                        @foreach (var parentDept in parentDepartments)
+                        {
+                            <option value="@parentDept.Id">@parentDept.Name</option>
+                        }
+                    </select>
                 </div>
                 <div class="mb-3">
                     <label for="departmentBudget" class="form-label">Budget</label>
@@ -126,6 +136,16 @@ else
                     <InputText type="text" class="form-control" @bind-Value="selectedDepartment.Code"></InputText>
                 </div>
                 <div class="mb-3">
+                    <label for="departmentParent" class="form-label">Parent Department</label>
+                    <select class="form-select" @bind="selectedDepartment.ParentDepartmentId">
+                        <option value=0>-- Select Parent Department --</option>
+                        @foreach (var parentDept in parentDepartments)
+                        {
+                            <option value="@parentDept.Id">@parentDept.Name</option>
+                        }
+                    </select>
+                </div>
+                <div class="mb-3">
                     <label for="departmentBudget" class="form-label">Budget</label>
                     <InputNumber type="text" class="form-control" @bind-Value="selectedDepartment.Budget"></InputNumber>
                 </div>
@@ -147,7 +167,24 @@ else
 
     List<DepartmentDTO> departments = new List<DepartmentDTO>();
     private DepartmentDTO selectedDepartment = new DepartmentDTO();
+    private List<DepartmentDTO> parentDepartments = new List<DepartmentDTO>();
+    private DepartmentDTO parentDepartment = new DepartmentDTO();
 
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            await LoadDepartments();
+            await GetDepartmentList();
+        }
+        catch (Exception ex)
+        {
+            LogErrorHelper.LogError(null, ex, LogErrorHelper.ErrorLevel.Error, "Department.razor - OnInitializedAsync");
+            await JS.InvokeVoidAsync("alert", "Error loading departments: " + ex.Message);
+        }
+    }
+
+   
     private async Task ConfirmDelete(DepartmentDTO dept)
     {
         bool confirmed = await JS.InvokeAsync<bool>("confirm", $"Are you sure you want to delete department {dept.Name}?");
@@ -157,6 +194,19 @@ else
         }
     }
 
+    private async Task GetDepartmentList()
+    {
+
+        try
+        {
+            parentDepartments = await new DepartmentHelper(ClientFactory).GetAllDepartments();
+        }
+        catch (Exception ex)
+        {
+            LogErrorHelper.LogError(null, ex, LogErrorHelper.ErrorLevel.Error, "Department.razor - GetDepartmentList");
+            await JS.InvokeVoidAsync("alert", "Error GetDepartmentList: " + ex.Message);
+        }
+    }
     private async Task DeleteDepartment(DepartmentDTO dept)
     {
         try
@@ -177,19 +227,7 @@ else
             await JS.InvokeVoidAsync("alert", "Error deleting department: " + ex.Message);
         }
     }
-    protected override async Task OnInitializedAsync()
-    {
-        try
-        {
-            await LoadDepartments();
 
-        }
-        catch (Exception ex)
-        {
-            LogErrorHelper.LogError(null, ex, LogErrorHelper.ErrorLevel.Error, "Department.razor - OnInitializedAsync");
-            await JS.InvokeVoidAsync("alert", "Error loading departments: " + ex.Message);
-        }
-    }
 
     private async Task OnEditClicked(DepartmentDTO dept)
     {
@@ -221,6 +259,21 @@ else
 
         try
         {
+            if (string.IsNullOrEmpty(department.Code))
+            {
+                await JS.InvokeVoidAsync("alert", "Error EditDepartment department, code is required!");
+                return createdDept;
+            }
+            if (string.IsNullOrEmpty(department.Name))
+            {
+                await JS.InvokeVoidAsync("alert", "Error EditDepartment department, Name is required!");
+                return createdDept;
+            }
+
+            if (department.ParentDepartmentId == 0)
+            {
+                department.ParentDepartmentId = null;
+            }
             createdDept = await new DepartmentHelper(ClientFactory)
            .CreateDepartmentAsync(department);
             if (createdDept != null)
