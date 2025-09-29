@@ -9,7 +9,7 @@ namespace Project.HR.Data.Models
         {
             var optionsBuilder = new DbContextOptionsBuilder<HRDbContext>();
 
-            // Use your connection string here
+            // Use your connection string here.
             optionsBuilder.UseSqlite("Data Source=hr_database.db");
 
             return new HRDbContext(optionsBuilder.Options);
