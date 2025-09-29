@@ -29,6 +29,7 @@ namespace Project.HR.Domain.DTOs
         public decimal MaxSalary { get; set; }
 
         public int DepartmentId { get; set; }
+        public string DepartmentName { get; set; } = string.Empty;
 
         public EmploymentType EmploymentType { get; set; }
     }

@@ -49,13 +49,13 @@ else
                     Description
                 </th>
                 <th>
-                    MinSalary
+                    Min Salary
                 </th>
                 <th>
-                    MaxSalary
+                    Max Salary
                 </th>
                 <th>
-                    Department Id
+                    Department Name
                 </th>
 
             </tr>
@@ -72,7 +72,7 @@ else
                     <td>@pos.Description</td>
                     <td>@pos.MinSalary</td>
                     <td>@pos.MaxSalary</td>
-                    <td>@pos.DepartmentId</td>
+                    <td>@pos.DepartmentName</td>
                 </tr>
             }
         </tbody>
@@ -110,7 +110,7 @@ else
                     </InputSelect>
                 </div>
                 <div class="mb-3">
-                    <label for="positionDepartmentId" class="form-label">DepartmentId</label>
+                    <label for="positionDepartmentId" class="form-label">Department Id</label>
                     <InputSelect class="form-select" @bind-Value="pos.DepartmentId">
                         <option value="">Select Department</option>
 
@@ -278,7 +278,9 @@ else
         try
         {
             PositionHelper positionHelper = new PositionHelper(ClientFactory);
+
             var createdPosition = await positionHelper.CreatePositionAsync(pos);
+
             if (createdPosition != null)
             {
                 positions.Add(createdPosition);

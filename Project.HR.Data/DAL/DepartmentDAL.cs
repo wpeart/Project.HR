@@ -36,6 +36,7 @@ namespace Project.HR.Data.DAL
         public async Task<List<DepartmentDTO?>> GetAllDepartmentsAsync()
         {
             var department = await _context.Departments
+                .AsNoTracking()
                   .Select(d => new DepartmentDTO
                   {
                       Id = d.Id,

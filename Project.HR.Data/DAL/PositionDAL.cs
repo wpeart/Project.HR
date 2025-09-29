@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Project.HR.Data.Models;
+using Project.HR.Domain.DTOs;
 using Project.HR.Domain.Interfaces;
 using Project.HR.Domain.Models;
 using System;
@@ -38,10 +39,23 @@ namespace Project.HR.Data.DAL
             return true;
         }
 
-        public async Task<List<Position>> GetAllPositionsAsync()
+        public async Task<List<PostionDTO?>> GetAllPositionsAsync()
         {
             return await _context.Positions
                  .AsNoTracking()
+                 .Include(p => p.Department)
+                 .Select(p => new PostionDTO
+                 {
+                     Id = p.Id,
+                     Title = p.Title,
+                     Description = p.Description,
+                     Code = p.Code,
+                     DepartmentId = p.DepartmentId,
+                     DepartmentName = p.Department != null ? p.Department.Name : null,
+                     MinSalary = p.MinSalary,
+                     MaxSalary = p.MaxSalary,
+                     EmploymentType = p.EmploymentType
+                 })
                  .ToListAsync();
         }
 
@@ -64,6 +78,12 @@ namespace Project.HR.Data.DAL
                  .ExecuteUpdateAsync(p => p
                      .SetProperty(p => p.Title, position.Title)
                      .SetProperty(p => p.Description, position.Description)
+                     .SetProperty(p => p.Code, position.Code)
+                     .SetProperty(p => p.DepartmentId, position.DepartmentId)
+                     .SetProperty(p => p.MinSalary, position.MinSalary)
+                     .SetProperty(p => p.MaxSalary, position.MaxSalary)
+                     .SetProperty(p => p.EmploymentType, position.EmploymentType)
+
                  );
             return position;
         }

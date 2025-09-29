@@ -48,7 +48,7 @@ else
                     Description
                 </th>
                 <th>
-                    ParentDepartmentId
+                    Parent Department
                 </th>
                 <th>
                     Budget
@@ -282,6 +282,7 @@ else
             }
             department = new DepartmentDTO(); /*resets form contents*/
             await JS.InvokeVoidAsync("alert", "Department created successfully!");
+            StateHasChanged(); 
             return createdDept;
         }
         catch (Exception ex)

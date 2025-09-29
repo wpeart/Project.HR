@@ -15,29 +15,19 @@ namespace Project.HR.UI.Blazor.Helpers
         }
         public async Task<List<PostionDTO>> GetAllPositions()
         {
-            List<Position> positions = new List<Position>();
+            List<PostionDTO> positions = new List<PostionDTO>();
             var client = _clientFactory.CreateClient("HRApiClient");
-            positions = await client.GetFromJsonAsync<List<Position>>("api/positions");
-            List<PostionDTO> positionDTOs = new List<PostionDTO>();
-            foreach (var pos in positions)
-            {
-                PostionDTO dto = new PostionDTO
-                {
-                    Title = pos.Title,
-                    Code = pos.Code,
-                    Description = pos.Description,
-                    DepartmentId = pos.DepartmentId,
-                    MaxSalary = pos.MaxSalary,
-                    MinSalary = pos.MinSalary,
-                    Id = pos.Id
-                };
-                positionDTOs.Add(dto);
-            }
-            return positionDTOs;
+            positions = await client.GetFromJsonAsync<List<PostionDTO>>("api/positions");
+            
+
+
+            return positions;
         }
 
         public async Task<PostionDTO> CreatePositionAsync(PostionDTO position)
         {
+            string strPos= JsonSerializer.Serialize(position);
+
             PostionDTO ret = new PostionDTO();
             var client = _clientFactory.CreateClient("HRApiClient");
             if (position != null)
