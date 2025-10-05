@@ -10,6 +10,8 @@ namespace Project.HR.Domain.DTOs
 {
     public class EmployeeDTO
     {
+        public int? UserId { get; set; }
+
         [Required, MaxLength(30)]
         public string UserName { get; set; }
 

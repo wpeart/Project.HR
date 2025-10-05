@@ -61,7 +61,7 @@ namespace Project.HR.Domain.Models
 
         public Position Position { get; set; } = null!;
         public Employee? Manager { get; set; }
-        public List<Employee> DirectReports { get; set; } = new();
+        public List<Employee>? DirectReports { get; set; } = new();
         public List<Salary> Salaries { get; set; } = new();
         public List<Leave> Leaves { get; set; } = new();
         public Department Department { get; set; } = null!;

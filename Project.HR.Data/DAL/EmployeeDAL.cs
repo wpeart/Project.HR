@@ -14,16 +14,28 @@ namespace Project.HR.Data.DAL
         {
             _context = context;
         }
+        // In your endpoint or DAL, before SaveChangesAsync:
         public async Task<Employee> CreateEmployeeAsync(Employee employee)
         {
-            await _context
-                .Employees
-                .AddAsync(employee);
-            await _context
-                .SaveChangesAsync();
+            // Validate all foreign keys exist
+            var roleExists = await _context.UserRoles.AnyAsync(r => r.RoleId == employee.RoleId);
+            if (!roleExists)
+                throw new InvalidOperationException($"RoleId {employee.RoleId} does not exist in UserRoles table");
 
+           
+
+           
+
+            if (employee.ManagerId.HasValue)
+            {
+                var managerExists = await _context.Employees.AnyAsync(e => e.UserId == employee.ManagerId.Value);
+                if (!managerExists)
+                    throw new InvalidOperationException($"ManagerId {employee.ManagerId} does not exist in Employees table");
+            }
+
+            _context.Employees.Add(employee);
+            await _context.SaveChangesAsync();
             return employee;
-
         }
 
         public async Task<List<Employee>> GetAllEmployeesAsync()

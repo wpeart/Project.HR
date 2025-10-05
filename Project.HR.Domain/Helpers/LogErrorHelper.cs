@@ -18,37 +18,27 @@ namespace Project.HR.Domain.Helpers
 
         public static void LogError(string? message, Exception? ex, ErrorLevel level = ErrorLevel.Error, [CallerMemberName] string callerName = "")
         {
-            String logMessage = "";
+            string logMessage = $"[{callerName}] {message}";
 
-            if (ex is not null)
-            {
-                logMessage = $"[{callerName}] {message} - Exception: {ex.Message}";
-
-            }
-            else
-            {
-                logMessage = $"[{callerName}] {message}";
-
-            }
             switch (level)
             {
                 case ErrorLevel.Info:
-                    _logger.Info(logMessage);
+                    _logger.Info(ex, logMessage);
                     break;
                 case ErrorLevel.Warn:
-                    _logger.Warn(logMessage);
+                    _logger.Warn(ex, logMessage);
                     break;
                 case ErrorLevel.Error:
-                    _logger.Error(logMessage);
+                    _logger.Error(ex, logMessage);
                     break;
                 case ErrorLevel.Fatal:
-                    _logger.Fatal(logMessage);
+                    _logger.Fatal(ex, logMessage);
                     break;
                 case ErrorLevel.Trace:
-                    _logger.Trace(logMessage);
+                    _logger.Trace(ex, logMessage);
                     break;
                 default:
-                    _logger.Error(logMessage);
+                    _logger.Error(ex, logMessage);
                     break;
             }
         }

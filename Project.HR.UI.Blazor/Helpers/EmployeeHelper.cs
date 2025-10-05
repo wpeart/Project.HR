@@ -24,5 +24,57 @@ namespace Project.HR.UI.Blazor.Helpers
             return new List<EmployeeDTO>();
         }
 
+
+        public async Task<EmployeeDTO?> GetEmployeeByIdAsync(int id)
+        {
+            var client = _clientFactory.CreateClient("HRApiClient");
+            var response = await client.GetAsync($"api/employees/{id}");
+            if (response.IsSuccessStatusCode)
+            {
+                var jsonString = await response.Content.ReadAsStringAsync();
+                return JsonSerializer.Deserialize<EmployeeDTO>(jsonString, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+            }
+            return null;
+        }
+
+        public async Task<EmployeeDTO?> CreateEmployeeAsync(EmployeeDTO employee)
+        {
+            var client = _clientFactory.CreateClient("HRApiClient");
+            var response = await client.PostAsJsonAsync("api/employees", employee);
+            if (response.IsSuccessStatusCode)
+            {
+                var jsonString = await response.Content.ReadAsStringAsync();
+                return JsonSerializer.Deserialize<EmployeeDTO>(jsonString, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+            }
+
+            return null;
+        }
+
+        public async Task<EmployeeDTO?> UpdateEmployeeAsync(int id, EmployeeDTO employee)
+        {
+            var client = _clientFactory.CreateClient("HRApiClient");
+            var response = await client.PutAsJsonAsync($"api/employees/{id}", employee);
+            if (response.IsSuccessStatusCode)
+            {
+                var jsonString = await response.Content.ReadAsStringAsync();
+                return JsonSerializer.Deserialize<EmployeeDTO>(jsonString, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+            }
+            return null;
+        }
+
+        public async Task<bool> DeleteEmployeeAsync(int id)
+        {
+            var client = _clientFactory.CreateClient("HRApiClient");
+            var response = await client.DeleteAsync($"api/employees/{id}");
+
+            if (response.IsSuccessStatusCode)
+            {
+                var jsonString = await response.Content.ReadAsStringAsync();
+                return JsonSerializer.Deserialize<bool>(jsonString, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+            }
+
+            return false;
+        }
+
     }
 }

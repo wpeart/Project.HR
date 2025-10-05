@@ -39,6 +39,7 @@ namespace Project.HR.Data.Models
                 entity.HasIndex(e => e.Email).IsUnique();
 
                 // Manager relationship
+                entity.Property(e => e.ManagerId).IsRequired(false);
                 entity.HasOne(e => e.Manager)
                       .WithMany(e => e.DirectReports)
                       .HasForeignKey(e => e.ManagerId)
