@@ -12,6 +12,7 @@ namespace Project.HR.Domain.DTOs
 {
     public class PostionDTO
     {
+        public int? Id { get; set; }
         [Required, MaxLength(100)]
         public string Title { get; set; } = string.Empty;
 
@@ -28,6 +29,7 @@ namespace Project.HR.Domain.DTOs
         public decimal MaxSalary { get; set; }
 
         public int DepartmentId { get; set; }
+        public string DepartmentName { get; set; } = string.Empty;
 
         public EmploymentType EmploymentType { get; set; }
     }

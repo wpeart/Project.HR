@@ -46,6 +46,25 @@ namespace Project.HR.WebAPI.Endpoints
                 .Produces(StatusCodes.Status404NotFound)
                 .ProducesProblem(StatusCodes.Status500InternalServerError)
                 .Accepts<string>("application/json");
+
+            group.MapGet("/{id:int}", async (int id, IDepartmentService departmentService) =>
+            {
+                try
+                {
+                    var department = await departmentService.GetDepartmentByIdAsync(id);
+                    return department is not null ? Results.Ok(department) : Results.NotFound();
+                }
+                catch (Exception ex)
+                {
+                    LogErrorHelper.LogError("Error fetching department by id", ex, LogErrorHelper.ErrorLevel.Error, "Get Department By Id");
+                    return Results.Problem("An error occurred while fetching the department.");
+                }
+            })
+                .WithName("GetDepartmentById")
+                .Produces<Department>(StatusCodes.Status200OK)
+                .Produces(StatusCodes.Status404NotFound)
+                .ProducesProblem(StatusCodes.Status500InternalServerError);
+                
             group.MapPost("/", async (DepartmentDTO departmentDto, IDepartmentService departmentService) =>
             {
                 try
@@ -103,16 +122,13 @@ namespace Project.HR.WebAPI.Endpoints
                 .Produces(StatusCodes.Status404NotFound)
                 .ProducesProblem(StatusCodes.Status500InternalServerError);
 
-            group.MapDelete("/{departmentName}", async (string departmentName, IDepartmentService departmentService) =>
+            group.MapDelete("/{id}", async (int id, IDepartmentService departmentService) =>
             {
                 try
                 {
-                    if (string.IsNullOrEmpty(departmentName))
-                    {
-                        return Results.BadRequest("Department Name is required!");
-                    }
+                    
 
-                    await departmentService.DeleteDepartmentAsync(departmentName);
+                    await departmentService.DeleteDepartmentAsync(id);
                     return Results.NoContent();
 
                 }

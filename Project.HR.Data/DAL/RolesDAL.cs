@@ -14,7 +14,7 @@ namespace Project.HR.Data.DAL
     {
         private readonly HRDbContext _context;
 
-       
+
 
         public RolesDAL(HRDbContext context)
         {
@@ -32,9 +32,11 @@ namespace Project.HR.Data.DAL
             return role;
         }
 
-        public Task<bool> DeleteRoleAsync(int roleId)
+        public async Task<bool> DeleteRoleAsync(int roleId)
         {
-            throw new NotImplementedException();
+            _context.UserRoles.Remove(new UserRoles { RoleId = roleId });
+            return await _context.SaveChangesAsync().ContinueWith(t => t.Result > 0);
+
         }
 
         public async Task<List<UserRoles>> GetAllRolesAsync()
@@ -47,16 +49,19 @@ namespace Project.HR.Data.DAL
                 .ToListAsync();
         }
 
-      
+
 
         public Task<UserRoles?> GetRoleByIdAsync(int roleId)
         {
             throw new NotImplementedException();
         }
 
-        public Task<UserRoles?> UpdateRoleAsync(int roleId, UserRoles role)
+        public async Task<UserRoles> UpdateRoleAsync(int roleId, UserRoles role)
         {
-            throw new NotImplementedException();
+            _context.UserRoles.Update(role);
+            await _context.SaveChangesAsync();
+
+            return role;
         }
     }
 }

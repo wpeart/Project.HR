@@ -1,0 +1,236 @@
+﻿@page "/roles"
+@using Project.HR.Domain.DTOs
+@using Project.HR.Domain.Helpers
+@using Project.HR.UI.Blazor.Helpers
+
+@rendermode InteractiveServer
+@inject IHttpClientFactory ClientFactory
+
+<h3>Roles</h3>
+
+<div class="container text-center">
+    <div class="row">
+        <div class="col">
+            <button id="btnRefresh" class="btn btn-info" @onclick="LoadRoles">Refresh</button>
+        </div>
+        <div class="col">
+            <button id="btnCreate" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#createModal">Create Roles</button>
+
+        </div>
+
+    </div>
+</div>
+<br />
+<br />
+
+@if (roles is null)
+{
+    <p><em>Loading...</em></p>
+
+}
+else
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th></th>
+                <th></th>
+                <th>ID</th>
+                <th>
+                    Role
+                </th>
+                <th>
+                    Description
+                </th>
+
+
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var role in roles)
+            {
+                <tr>
+                    <td><button class="bnt btn-primary" @onclick="() => OnEditClicked(role)" id="@role.RoleId">Edit</button></td>
+                    <td>   <button class="btn btn-danger" @onclick="() => ConfirmDelete(role)">Delete</button></td>
+                    <td>@role.RoleId</td>
+                    <td>@role.RoleName</td>
+                    <td>@role.RoleDescription</td>
+
+                </tr>
+            }
+        </tbody>
+    </table>
+
+}
+<div class="modal fade" id="createModal" tabindex="-1" role="dialog" aria-labelledby="createModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="createModalLabel">Create Role</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+
+            </div>
+            <div class="modal-body">
+                <div class="mb-3">
+                    <label for="departmentName" class="form-label">Name</label>
+                    <InputText type="text" class="form-control" @bind-Value="role.RoleName"></InputText>
+                </div>
+                <div class="mb-3">
+                    <label for="departmentCode" class="form-label">Code</label>
+                    <InputText type="text" class="form-control" @bind-Value="role.RoleDescription"></InputText>
+                </div>
+
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" data-bs-dismiss="modal" @onclick="CreateRole">Save changes</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="editModal" tabindex="-1" role="dialog" aria-labelledby="editModal" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="editModalLabel">Update Role</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+
+            </div>
+            <div class="modal-body">
+                <div class="mb-3">
+                    <label for="departmentName" class="form-label">Name</label>
+                    <InputText type="text" class="form-control" @bind-Value="selectedRole.RoleName"></InputText>
+                </div>
+                <div class="mb-3">
+                    <label for="departmentCode" class="form-label">Code</label>
+                    <InputText type="text" class="form-control" @bind-Value="selectedRole.RoleDescription"></InputText>
+                </div>
+
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" data-bs-dismiss="modal" @onclick="UpdateRole">Save changes</button>
+            </div>
+        </div>
+    </div>
+</div>
+@code {
+
+    private List<UserRolesDTO> roles = new();
+    private UserRolesDTO role = new();
+    private UserRolesDTO selectedRole = new();
+    protected override async Task OnInitializedAsync()
+    {
+
+        await LoadRoles();
+
+
+
+    }
+    private async Task LoadRoles()
+    {
+        try
+        {
+            roles = await new RolesHelper(ClientFactory).GetAllRoles();
+        }
+        catch (Exception ex)
+        {
+            LogErrorHelper.LogError(null, ex, LogErrorHelper.ErrorLevel.Error, "Roles.razor - LoadRoles");
+            await JS.InvokeVoidAsync("alert", "Error loading roles: " + ex.Message);
+        }
+
+
+    }
+    private async Task<UserRolesDTO> CreateRole()
+    {
+        UserRolesDTO userRolesDTO = new();
+
+        try
+        {
+
+            userRolesDTO = await new RolesHelper(ClientFactory).CreateRoleAsync(role);
+
+            if (userRolesDTO != null)
+            {
+                roles.Add(userRolesDTO);
+                await JS.InvokeVoidAsync("alert", "Role created successfully.");
+                role = new UserRolesDTO(); /*reset form contents*/
+            }
+            else
+            {
+                await JS.InvokeVoidAsync("alert", "Failed to create role.");
+            }
+
+
+        }
+        catch (Exception ex)
+        {
+            LogErrorHelper.LogError(null, ex, LogErrorHelper.ErrorLevel.Error, "Roles.razor - CreateRole");
+            await JS.InvokeVoidAsync("alert", "Error creating roles: " + ex.Message);
+        }
+        return userRolesDTO;
+    }
+
+    private async Task UpdateRole()
+    {
+        try
+        {
+            if (string.IsNullOrEmpty(selectedRole.RoleName))
+            {
+                await JS.InvokeVoidAsync("alert", "Error Updating role, role name is required!");
+                return;
+            }
+
+            await new RolesHelper(ClientFactory).UpdateRoleAsync(Convert.ToInt32(selectedRole.RoleId), selectedRole);
+
+            await LoadRoles();
+            await JS.InvokeVoidAsync("alert", "Role updated successfully.");
+        }
+        catch (Exception ex)
+        {
+            LogErrorHelper.LogError(null, ex, LogErrorHelper.ErrorLevel.Error, "Roles.razor - CreateRole");
+            await JS.InvokeVoidAsync("alert", "Error creating roles: " + ex.Message);
+        }
+    }
+
+    private async Task DeleteRole(UserRolesDTO role)
+    {
+        try
+        {
+            var result = await new RolesHelper(ClientFactory).DeleteRoleAsync(role.RoleId);
+            if (result)
+            {
+                roles.Remove(role);
+                await JS.InvokeVoidAsync("alert", "Role deleted successfully.");
+            }
+            else
+            {
+                await JS.InvokeVoidAsync("alert", "Failed to delete role.");
+            }
+        }
+        catch (Exception ex)
+        {
+            LogErrorHelper.LogError(null, ex, LogErrorHelper.ErrorLevel.Error, "Roles.razor - DeleteRole");
+            await JS.InvokeVoidAsync("alert", "Error deleting role: " + ex.Message);
+        }
+    }
+    private void OnEditClicked(UserRolesDTO role)
+    {
+        selectedRole = role;
+        JS.InvokeVoidAsync("bootstrapInterop.showModal", "#editModal");
+    }
+
+    private async Task ConfirmDelete(UserRolesDTO role)
+    {
+        bool confirmed = await JS.InvokeAsync<bool>("confirm", $"Are you sure you want to delete the role '{role.RoleName}'?");
+        if (confirmed)
+        {
+            await DeleteRole(role);
+        }
+    }
+
+    [Inject] IJSRuntime JS { get; set; }
+
+
+}

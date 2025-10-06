@@ -14,16 +14,28 @@ namespace Project.HR.Data.DAL
         {
             _context = context;
         }
+        // In your endpoint or DAL, before SaveChangesAsync:
         public async Task<Employee> CreateEmployeeAsync(Employee employee)
         {
-            await _context
-                .Employees
-                .AddAsync(employee);
-            await _context
-                .SaveChangesAsync();
+            // Validate all foreign keys exist
+            var roleExists = await _context.UserRoles.AnyAsync(r => r.RoleId == employee.RoleId);
+            if (!roleExists)
+                throw new InvalidOperationException($"RoleId {employee.RoleId} does not exist in UserRoles table");
 
+
+
+
+
+            if (employee.ManagerId.HasValue)
+            {
+                var managerExists = await _context.Employees.AnyAsync(e => e.UserId == employee.ManagerId.Value);
+                if (!managerExists)
+                    throw new InvalidOperationException($"ManagerId {employee.ManagerId} does not exist in Employees table");
+            }
+
+            _context.Employees.Add(employee);
+            await _context.SaveChangesAsync();
             return employee;
-
         }
 
         public async Task<List<Employee>> GetAllEmployeesAsync()
@@ -98,8 +110,7 @@ namespace Project.HR.Data.DAL
                 LogErrorHelper.LogError($"Updating employee with ID: {id}", null, LogErrorHelper.ErrorLevel.Info);
 
                 var existingEmployee = await _context.Employees
-                    .Include(e => e.Department)  // Include related data if needed
-                    .Include(e => e.Position)
+                 
                     .FirstOrDefaultAsync(e => e.UserId == id);
 
                 if (existingEmployee == null)
@@ -111,12 +122,15 @@ namespace Project.HR.Data.DAL
                 // Validation: Check if email is unique (excluding current employee)
                 if (await _context.Employees.AnyAsync(e => e.Email == employee.Email && e.UserId != id))
                 {
+                    LogErrorHelper.LogError($"Email {employee.Email} is already in use by another employee", null, LogErrorHelper.ErrorLevel.Warn);
                     throw new InvalidOperationException($"Email {employee.Email} is already in use by another employee.");
                 }
 
                 // Validation: Check if department exists
                 if (!await _context.Departments.AnyAsync(d => d.Id == employee.DepartmentId))
                 {
+                    LogErrorHelper.LogError($"Department with ID {employee.DepartmentId} does not exist", null, LogErrorHelper.ErrorLevel.Warn);
+
                     throw new InvalidOperationException($"Department with ID {employee.DepartmentId} does not exist.");
                 }
 
@@ -124,6 +138,7 @@ namespace Project.HR.Data.DAL
                 if (employee.ManagerId.HasValue &&
                     !await _context.Employees.AnyAsync(e => e.UserId == employee.ManagerId.Value))
                 {
+                    LogErrorHelper.LogError($"Manager with ID {employee.ManagerId} does not exist", null, LogErrorHelper.ErrorLevel.Warn);
                     throw new InvalidOperationException($"Manager with ID {employee.ManagerId} does not exist.");
                 }
 
@@ -142,7 +157,15 @@ namespace Project.HR.Data.DAL
                 existingEmployee.ManagerId = employee.ManagerId;
                 existingEmployee.PositionId = employee.PositionId;
                 existingEmployee.RoleId = employee.RoleId;
+                
+                
+                existingEmployee.EmergencyContactName = employee.EmergencyContactName;
+                existingEmployee.EmergencyContactPhone = employee.EmergencyContactPhone;
+                existingEmployee.HireDate = employee.HireDate;
+                existingEmployee.TerminationDate = employee.TerminationDate;
                 existingEmployee.Status = employee.Status;
+                existingEmployee.UserName = employee.UserName;
+                existingEmployee.Password = employee.Password;
 
                 // Update timestamp if you have one
                 // existingEmployee.UpdatedAt = DateTime.UtcNow;
@@ -150,7 +173,7 @@ namespace Project.HR.Data.DAL
                 await _context.SaveChangesAsync();
                 await transaction.CommitAsync();
 
-                LogErrorHelper.LogError($"Employee with ID {id} updated successfully", null, LogErrorHelper.ErrorLevel.Info);
+                LogErrorHelper.LogError($"Employee with ID {id} updated successfully username: {existingEmployee.UserName}", null, LogErrorHelper.ErrorLevel.Info);
                 return existingEmployee;
             }
             catch (Exception ex)

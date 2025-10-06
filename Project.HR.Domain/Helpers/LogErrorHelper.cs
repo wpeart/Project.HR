@@ -12,41 +12,35 @@ namespace Project.HR.Domain.Helpers
             Info,
             Warn,
             Error,
-            Fatal
+            Fatal,
+            Trace
         }
 
         public static void LogError(string? message, Exception? ex, ErrorLevel level = ErrorLevel.Error, [CallerMemberName] string callerName = "")
         {
-            String logMessage = "";
+            string logMessage = $"[{callerName}] {message}";
 
-            if (ex is not null)
-            {
-                logMessage = $"[{callerName}] {message} - Exception: {ex.Message}";
-
-            }
-            else
-            {
-                logMessage = $"[{callerName}] {message}";
-
-            }
             switch (level)
-                {
-                    case ErrorLevel.Info:
-                        _logger.Info(logMessage);
-                        break;
-                    case ErrorLevel.Warn:
-                        _logger.Warn(logMessage);
-                        break;
-                    case ErrorLevel.Error:
-                        _logger.Error(logMessage);
-                        break;
-                    case ErrorLevel.Fatal:
-                        _logger.Fatal(logMessage);
-                        break;
-                    default:
-                        _logger.Error(logMessage);
-                        break;
-                }
+            {
+                case ErrorLevel.Info:
+                    _logger.Info(ex, logMessage);
+                    break;
+                case ErrorLevel.Warn:
+                    _logger.Warn(ex, logMessage);
+                    break;
+                case ErrorLevel.Error:
+                    _logger.Error(ex, logMessage);
+                    break;
+                case ErrorLevel.Fatal:
+                    _logger.Fatal(ex, logMessage);
+                    break;
+                case ErrorLevel.Trace:
+                    _logger.Trace(ex, logMessage);
+                    break;
+                default:
+                    _logger.Error(ex, logMessage);
+                    break;
+            }
         }
 
     }

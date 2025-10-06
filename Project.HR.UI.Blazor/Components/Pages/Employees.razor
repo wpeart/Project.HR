@@ -1,0 +1,625 @@
+﻿@page "/employees"
+@using Project.HR.Domain.DTOs
+@using Project.HR.Domain.Enums
+@using Project.HR.Domain.Helpers
+@using Project.HR.UI.Blazor.Helpers
+<h3>Employees</h3>
+@rendermode InteractiveServer
+@inject IHttpClientFactory ClientFactory
+
+<div class="container text-center">
+    <div class="row">
+        <div class="col">
+            <button id="btnRefresh" class="btn btn-info" @onclick="LoadEmployees">Refresh</button>
+        </div>
+        <div class="col">
+            <button id="btnCreate" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#createModal">Create an employee</button>
+
+        </div>
+
+    </div>
+</div>
+<br />
+<br />
+@if (employees is null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+    <table class="table table-bordered table-hover">
+        <thead>
+            <tr>
+                <th></th>
+                <th></th>
+                <th>
+                    UserId
+                </th>
+                <th>
+                    UserName
+                </th>
+                <th>
+                    FirstName
+                </th>
+                <th>
+                    LastName
+                </th>
+                <th>
+                    MiddleName
+                </th>
+                <th>
+                    Email
+                </th>
+                <th>
+                    PhoneNumber
+                </th>
+                <th>
+                    DateOfBirth
+                </th>
+                <th>HireDate</th>
+                <th>TerminationDate</th>
+                <th>Gender</th>
+                <th>MaritalStatus</th>
+                <th>Status</th>
+                <th>Address</th>
+                <th>City</th>
+                <th>State</th>
+                <th>ZipCode</th>
+                <th>Country</th>
+                <th>EmergencyContactName</th>
+                <th>EmergencyContactPhone</th>
+                <th>RoleId</th>
+                <th>DepartmentId</th>
+                <th>ManagerId</th>
+                <th>PositionId</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var employee in employees)
+            {
+                <tr>
+                    <td><button class="bnt btn-primary" @onclick="() => OnEditClicked(employee)" id="@employee.UserId">Edit</button></td>
+                    <td>   <button class="btn btn-danger" @onclick="() => ConfirmDelete(employee)">Delete</button></td>
+                       <td>@employee.UserId  </td>
+                    <td>@employee.UserName  </td>
+                    <td>@employee.UserName</td>
+                    <td>@employee.FirstName</td>
+                    <td>@employee.LastName</td>
+                    <td>@employee.MiddleName</td>
+                    <td>@employee.Email</td>
+                    <td>@employee.PhoneNumber</td>
+                    <td>@employee.DateOfBirth.ToString("MM/dd/yyyy")</td>
+                    <td>@employee.HireDate.ToString("MM/dd/yyyy")</td>
+                    <td>@employee.TerminationDate?.ToString("MM/dd/yyyy")</td>
+                    <td>@employee.Gender</td>
+                    <td>@employee.MaritalStatus</td>
+                    <td>@employee.Status</td>
+                    <td>@employee.Address</td>
+                    <td>@employee.City</td>
+                    <td>@employee.State</td>
+                    <td>@employee.ZipCode</td>
+                    <td>@employee.Country</td>
+                    <td>@employee.EmergencyContactName</td>
+                    <td>@employee.EmergencyContactPhone</td>
+                    <td>@employee.RoleId</td>
+                    <td>@employee.DepartmentId</td>
+                    <td>@employee.ManagerId</td>
+                    <td>@employee.PositionId</td>
+
+                </tr>
+            }
+        </tbody>
+    </table>
+
+}
+
+<div class="modal fade" id="createModal" tabindex="-1" role="dialog" aria-labelledby="createModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="createModalLabel">Create Employee</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+
+            </div>
+            <div class="modal-body">
+                <div class="mb-3">
+                    <label for="employeeUsername" class="form-label">UserName</label>
+                    <InputText type="text" class="form-control" @bind-Value="employee.UserName" required></InputText>
+                </div>
+                <div class="mb-3">
+                    <label for="employeePassword" class="form-label">Password</label>
+                    <InputText type="text" class="form-control" @bind-Value="employee.Password" required></InputText>
+                </div>
+                <div class="mb-3">
+                    <label for="employeeFirstName" class="form-label">FirstName</label>
+                    <InputText type="text" class="form-control" @bind-Value="employee.FirstName" required></InputText>
+                </div>
+                <div class="mb-3">
+                    <label for="employeeMiddleName" class="form-label">MiddleName</label>
+                    <InputText class="form-control" @bind-Value="employee.MiddleName"></InputText>
+                </div>
+                <div class="mb-3">
+                    <label for="employeeLastName" class="form-label">LastName</label>
+                    <InputText class="form-control" @bind-Value="employee.LastName" required></InputText>
+                </div>
+                <div class="mb-3">
+                    <label for="employeeEmail" class="form-label">Email</label>
+                    <InputText class="form-control" @bind-Value="employee.Email" required type="email"></InputText>
+                </div>
+
+                <div class="mb-3">
+                    <label for="positionPhoneNumber" class="form-label">PhoneNumber</label>
+                    <InputText class="form-control" @bind-Value="employee.PhoneNumber" required></InputText>
+
+                </div>
+
+                <div class="mb-3">
+                    <label for="employeeDateOfBirth" class="form-label">DateOfBirth</label>
+                    <InputDate class="form-control" @bind-Value="employee.DateOfBirth" required></InputDate>
+                </div>
+                <div class="mb-3">
+                    <label for="employeeHireDate" class="form-label">HireDate</label>
+                    <InputDate class="form-control" @bind-Value="employee.HireDate" required></InputDate>
+                </div>
+
+                <div class="mb-3">
+                    <label for="employeeGender" class="form-label">Gender</label>
+                    <InputSelect class="form-select" @bind-Value="employee.Gender">
+                        @foreach (var type in Enum.GetValues(typeof(Gender)).Cast<Gender>())
+                        {
+                            <option value="@type">@type</option>
+                        }
+                    </InputSelect>
+                </div>
+                <div class="mb-3">
+                    <label for="employeeMaritalStatus" class="form-label">MaritalStatus</label>
+                    <InputSelect class="form-select" @bind-Value="employee.MaritalStatus">
+                        @foreach (var type in Enum.GetValues(typeof(MaritalStatus)).Cast<MaritalStatus>())
+                        {
+                            <option value="@type">@type</option>
+                        }
+                    </InputSelect>
+                </div>
+                <div class="mb-3">
+                    <label for="employeeStatus" class="form-label">Employee Status</label>
+                    <InputSelect class="form-select" @bind-Value="employee.Status">
+                        @foreach (var type in Enum.GetValues(typeof(EmployeeStatus)).Cast<EmployeeStatus>())
+                        {
+                            <option value="@type">@type</option>
+                        }
+                    </InputSelect>
+
+                    <div class="mb-3">
+                        <label for="employeeAddress" class="form-label">Address</label>
+                        <InputText class="form-control" @bind-Value="employee.Address" required></InputText>
+                    </div>
+                    <div class="mb-3">
+                        <label for="employeeCity" class="form-label">City</label>
+                        <InputText class="form-control" @bind-Value="employee.City" required></InputText>
+                    </div>
+                    <div class="mb-3">
+                        <label for="employeeState" class="form-label">State</label>
+                        <InputText class="form-control" @bind-Value="employee.State" required></InputText>
+                    </div>
+                    <div class="mb-3">
+                        <label for="employeeZipCode" class="form-label">Zipcode</label>
+                        <InputText class="form-control" @bind-Value="employee.ZipCode" required></InputText>
+                    </div>
+                    <div class="mb-3">
+                        <label for="employeeCountry" class="form-label">Country</label>
+                        <InputText class="form-control" @bind-Value="employee.Country" required></InputText>
+                    </div>
+                    <div class="mb-3">
+                        <label for="employeeEmergencyContactName" class="form-label">EmergencyContactName</label>
+                        <InputText class="form-control" @bind-Value="employee.EmergencyContactName" required></InputText>
+                    </div>
+                    <div class="mb-3">
+                        <label for="employeeEmergencyContactPhone" class="form-label">EmergencyContactPhone</label>
+                        <InputText class="form-control" @bind-Value="employee.EmergencyContactPhone" required></InputText>
+                    </div>
+
+                    <label for="employeeRole" class="form-label">Role</label>
+                    <InputSelect class="form-select" @bind-Value="employee.RoleId">
+                        <option value="">Please select a role</option>
+                        @foreach (var role in roles)
+                        {
+                            <option value="@role.RoleId">@role.RoleName</option>
+                        }
+                    </InputSelect>
+
+                    <label for="employeeDepartmentId" class="form-label">DepartmentId</label>
+                    <InputSelect class="form-select" @bind-Value="employee.DepartmentId">
+                        <option value="">Please select a department</option>
+                        @foreach (var department in departments)
+                        {
+                            <option value="@department.Id">@department.Description</option>
+                        }
+                    </InputSelect>
+
+                    <label for="employeeManager" class="form-label">Employee Manager</label>
+                    <InputSelect class="form-select" @bind-Value="employee.ManagerId">
+                        <option value="">Please select an option if the employee has a manager</option>
+
+                        @foreach (var manager in managers)
+                        {
+                            <option value="@manager.ManagerId">@manager.FirstName - @manager.LastName (@manager.Email)</option>
+                        }
+                    </InputSelect>
+
+                    <label for="employeePosition" class="form-label">Employee position</label>
+                    <InputSelect class="form-select" @bind-Value="employee.PositionId">
+                        <option value="">Please select a position</option>
+                        @foreach (var position in positions)
+                        {
+                            <option value="@position.Id">@position.Description</option>
+                        }
+                    </InputSelect>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" data-bs-dismiss="modal" @onclick="CreateEmployee">Save changes</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="editModal" tabindex="-1" role="dialog" aria-labelledby="editModal" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="editModalLabel">Update Employee</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+
+            </div>
+            <div class="modal-body">
+                <div class="mb-3">
+                    <label for="employeeUsername" class="form-label">UserName</label>
+                    <InputText type="text" class="form-control" @bind-Value="selectedEmployee.UserName"></InputText>
+                </div>
+                <div class="mb-3">
+                    <label for="employeePassword" class="form-label">Password</label>
+                    <InputText type="text" class="form-control" @bind-Value="selectedEmployee.Password"></InputText>
+                </div>
+                <div class="mb-3">
+                    <label for="employeeFirstName" class="form-label">FirstName</label>
+                    <InputText type="text" class="form-control" @bind-Value="selectedEmployee.FirstName"></InputText>
+                </div>
+                <div class="mb-3">
+                    <label for="employeeMiddleName" class="form-label">MiddleName</label>
+                    <InputText class="form-control" @bind-Value="selectedEmployee.MiddleName"></InputText>
+                </div>
+                <div class="mb-3">
+                    <label for="employeeLastName" class="form-label">LastName</label>
+                    <InputText class="form-control" @bind-Value="selectedEmployee.LastName"></InputText>
+                </div>
+                <div class="mb-3">
+                    <label for="employeeEmail" class="form-label">Email</label>
+                    <InputText class="form-control" @bind-Value="selectedEmployee.Email"></InputText>
+                </div>
+
+                <div class="mb-3">
+                    <label for="positionPhoneNumber" class="form-label">PhoneNumber</label>
+                    <InputText class="form-control" @bind-Value="selectedEmployee.PhoneNumber"></InputText>
+
+                </div>
+
+                <div class="mb-3">
+                    <label for="employeeDateOfBirth" class="form-label">DateOfBirth</label>
+                    <InputDate class="form-control" @bind-Value="selectedEmployee.DateOfBirth"></InputDate>
+                </div>
+                <div class="mb-3">
+                    <label for="employeeHireDate" class="form-label">HireDate</label>
+                    <InputDate class="form-control" @bind-Value="selectedEmployee.HireDate"></InputDate>
+                </div>
+                <div class="mb-3">
+                    <label for="employeeTerminationDate" class="form-label">TerminationDate</label>
+                    <InputDate class="form-control" @bind-Value="selectedEmployee.TerminationDate"></InputDate>
+                </div>
+                <div class="mb-3">
+                    <label for="employeeGender" class="form-label">Gender</label>
+                    <InputSelect class="form-select" @bind-Value="selectedEmployee.Gender">
+                        @foreach (var type in Enum.GetValues(typeof(Gender)).Cast<Gender>())
+                        {
+                            <option value="@type">@type</option>
+                        }
+                    </InputSelect>
+                </div>
+                <div class="mb-3">
+                    <label for="employeeMaritalStatus" class="form-label">MaritalStatus</label>
+                    <InputSelect class="form-select" @bind-Value="selectedEmployee.MaritalStatus">
+                        @foreach (var type in Enum.GetValues(typeof(MaritalStatus)).Cast<MaritalStatus>())
+                        {
+                            <option value="@type">@type</option>
+                        }
+                    </InputSelect>
+                </div>
+                <div class="mb-3">
+                    <label for="employeeStatus" class="form-label">Employee Status</label>
+                    <InputSelect class="form-select" @bind-Value="selectedEmployee.Status">
+                        @foreach (var type in Enum.GetValues(typeof(EmployeeStatus)).Cast<EmployeeStatus>())
+                        {
+                            <option value="@type">@type</option>
+                        }
+                    </InputSelect>
+
+                    <div class="mb-3">
+                        <label for="employeeAddress" class="form-label">Address</label>
+                        <InputText class="form-control" @bind-Value="selectedEmployee.Address"></InputText>
+                    </div>
+                    <div class="mb-3">
+                        <label for="employeeCity" class="form-label">City</label>
+                        <InputText class="form-control" @bind-Value="selectedEmployee.City"></InputText>
+                    </div>
+                    <div class="mb-3">
+                        <label for="employeeState" class="form-label">State</label>
+                        <InputText class="form-control" @bind-Value="selectedEmployee.State"></InputText>
+                    </div>
+                    <div class="mb-3">
+                        <label for="employeeZipCode" class="form-label">Zipcode</label>
+                        <InputText class="form-control" @bind-Value="selectedEmployee.ZipCode"></InputText>
+                    </div>
+                    <div class="mb-3">
+                        <label for="employeeZipCode" class="form-label">Country</label>
+                        <InputText class="form-control" @bind-Value="selectedEmployee.ZipCode"></InputText>
+                    </div>
+                    <div class="mb-3">
+                        <label for="employeeEmergencyContactName" class="form-label">EmergencyContactName</label>
+                        <InputText class="form-control" @bind-Value="selectedEmployee.EmergencyContactName"></InputText>
+                    </div>
+                    <div class="mb-3">
+                        <label for="employeeEmergencyContactPhone" class="form-label">EmergencyContactPhone</label>
+                        <InputText class="form-control" @bind-Value="selectedEmployee.EmergencyContactPhone"></InputText>
+                    </div>
+
+                    <label for="employeeStatus" class="form-label">Role</label>
+                    <InputSelect class="form-select" @bind-Value="selectedEmployee.RoleId">
+                        <option value="">Please select a role</option>
+                        @foreach (var role in roles)
+                        {
+                            <option value="@role.RoleId">@role.RoleName</option>
+                        }
+                    </InputSelect>
+
+                    <label for="employeeDepartmentId" class="form-label">DepartmentId</label>
+                    <InputSelect class="form-select" @bind-Value="selectedEmployee.DepartmentId">
+                        <option value="">Please select a department</option>
+                        @foreach (var department in departments)
+                        {
+                            <option value="@department.Id">@department.Description</option>
+                        }
+                    </InputSelect>
+
+                    <label for="employeeManager" class="form-label">Employee Manager</label>
+                    <InputSelect class="form-select" @bind-Value="selectedEmployee.ManagerId">
+                        <option value="">Please select an option if the employee has a manager</option>
+
+                        @foreach (var manager in managers)
+                        {
+                            <option value="@manager.ManagerId">@manager.FirstName - @manager.LastName (@manager.Email)</option>
+                        }
+                    </InputSelect>
+
+                    <label for="employeePosition" class="form-label">Employee position</label>
+                    <InputSelect class="form-select" @bind-Value="selectedEmployee.PositionId">
+                        <option value="">Please select a position</option>
+                        @foreach (var position in positions)
+                        {
+                            <option value="@position.Id">@position.Description</option>
+                        }
+                    </InputSelect>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" data-bs-dismiss="modal" @onclick="UpdateEmployee">Save changes</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+@code {
+    string errMessage = string.Empty;
+    List<EmployeeDTO> employees = new List<EmployeeDTO>();
+    EmployeeDTO selectedEmployee = new EmployeeDTO();
+    EmployeeDTO employee = new EmployeeDTO();
+    List<EmploymentType> employmentType = new();
+    List<DepartmentDTO> departments = new List<DepartmentDTO>();
+    List<PostionDTO> positions = new List<PostionDTO>();
+    List<Gender> genders = Enum.GetValues(typeof(Gender)).Cast<Gender>().ToList();
+    List<UserRolesDTO> roles = new List<UserRolesDTO>();
+    List<EmployeeDTO> managers = new List<EmployeeDTO>();
+
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            Task task = LoadDepartments();
+            Task task2 = LoadPositions();
+            Task task3 = LoadRoles();
+            Task task4 = LoadEmployees();
+
+            await Task.WhenAll(task, task2, task3, task4);
+
+            employee.DateOfBirth = DateTime.Now.AddYears(-18);
+            employee.HireDate = DateTime.Now;
+        }
+        catch (Exception ex)
+        {
+            LogErrorHelper.LogError(null, ex, LogErrorHelper.ErrorLevel.Error, "Employees.razor - OnInitializedAsync");
+            errMessage = "Error loading OnInitializedAsync: " + ex.Message;
+        }
+    }
+
+    private async Task LoadEmployees()
+    {
+
+
+        try
+        {
+            EmployeeHelper employeeHelper = new EmployeeHelper(ClientFactory);
+            employees = await employeeHelper.GetEmployeesAsync();
+            managers = employees;
+
+
+        }
+        catch (Exception ex)
+        {
+            LogErrorHelper.LogError(null, ex, LogErrorHelper.ErrorLevel.Error, "Employees.razor - LoadEmployees");
+            errMessage = "Error loading Employees: " + ex.Message;
+        }
+
+
+    }
+
+    private async Task LoadRoles()
+    {
+        try
+        {
+            roles = await new RolesHelper(ClientFactory).GetAllRoles();
+        }
+        catch (Exception ex)
+        {
+            LogErrorHelper.LogError(null, ex, LogErrorHelper.ErrorLevel.Error, "Roles.razor - LoadRoles");
+            await JS.InvokeVoidAsync("alert", "Error loading roles: " + ex.Message);
+        }
+
+
+    }
+    private async Task LoadPositions()
+    {
+        PositionHelper positionHelper = new PositionHelper(ClientFactory);
+        positions = await positionHelper.GetAllPositions();
+
+
+    }
+    private async Task LoadDepartments()
+    {
+        try
+        {
+            DepartmentHelper departmentHelper = new DepartmentHelper(ClientFactory);
+            departments = await departmentHelper.GetAllDepartments();
+        }
+        catch (Exception ex)
+        {
+            LogErrorHelper.LogError(null, ex, LogErrorHelper.ErrorLevel.Error, "Employees.razor - LoadDepartments");
+            errMessage = "Error loading departments: " + ex.Message;
+        }
+    }
+    private async Task UpdateEmployee()
+    {
+        try
+        {
+            EmployeeHelper employeeHelper = new EmployeeHelper(ClientFactory);
+
+            var updatedEmployee = await employeeHelper
+            .UpdateEmployeeAsync(Convert.ToInt32(selectedEmployee.UserId), selectedEmployee);
+            if (updatedEmployee != null)
+            {
+                await LoadEmployees();
+                await JS.InvokeVoidAsync("alert", "Employee updated successfully.");
+                return;
+            }
+
+            await JS.InvokeVoidAsync("alert", "Failed to update Employee.");
+        }
+        catch (Exception ex)
+        {
+            LogErrorHelper.LogError(null, ex, LogErrorHelper.ErrorLevel.Error, "Employees.razor - UpdateEmployee");
+            errMessage = "Error updating employee: " + ex.Message;
+        }
+    }
+    private async Task CreateEmployee()
+    {
+        try
+        {
+            EmployeeHelper employeeHelper = new EmployeeHelper(ClientFactory);
+            var newEmployee = await employeeHelper.CreateEmployeeAsync(employee);
+            if (newEmployee != null)
+            {
+                await LoadEmployees();
+                await JS.InvokeVoidAsync("alert", "Employee created successfully.");
+            }
+            await JS.InvokeVoidAsync("alert", "Failed to create Employee.");
+        }
+        catch (Exception ex)
+        {
+            LogErrorHelper.LogError(null, ex, LogErrorHelper.ErrorLevel.Error, "Employees.razor - CreateEmployee");
+            errMessage = "Error creating employee: " + ex.Message;
+        }
+    }
+
+    private async Task ConfirmDelete(EmployeeDTO employee)
+    {
+        bool isConfirmed = await JS.InvokeAsync<bool>("confirm", $"Are you sure you want to delete employee {employee.FirstName} {employee.LastName}?");
+        if (isConfirmed)
+        {
+            await DeleteEmployee(employee);
+        }
+    }
+
+    private async Task DeleteEmployee(EmployeeDTO employee)
+    {
+        try
+        {
+            EmployeeHelper employeeHelper = new EmployeeHelper(ClientFactory);
+            bool isDeleted = await employeeHelper.DeleteEmployeeAsync(Convert.ToInt32(employee.UserId));
+            if (isDeleted)
+            {
+                await LoadEmployees();
+                await JS.InvokeVoidAsync("alert", "Employee deleted successfully.");
+                return;
+            }
+            await JS.InvokeVoidAsync("alert", "Failed to delete Employee.");
+        }
+        catch (Exception ex)
+        {
+            LogErrorHelper.LogError(null, ex, LogErrorHelper.ErrorLevel.Error, "Employees.razor - DeleteEmployee");
+            errMessage = "Error deleting employee: " + ex.Message;
+        }
+    }
+
+    private async Task OnEditClicked(EmployeeDTO employee)
+    {
+        selectedEmployee = new EmployeeDTO
+        {
+            UserId = employee.UserId,
+            UserName = employee.UserName,
+            Password = employee.Password,
+            FirstName = employee.FirstName,
+            MiddleName = employee.MiddleName,
+            LastName = employee.LastName,
+            Email = employee.Email,
+            PhoneNumber = employee.PhoneNumber,
+            DateOfBirth = employee.DateOfBirth,
+            HireDate = employee.HireDate,
+            TerminationDate = employee.TerminationDate,
+            Address = employee.Address,
+            City = employee.City,
+            State = employee.State,
+            ZipCode = employee.ZipCode,
+            Country = employee.Country,
+            EmergencyContactName = employee.EmergencyContactName,
+            EmergencyContactPhone = employee.EmergencyContactPhone
+                ,
+            DepartmentId = employee.DepartmentId,
+            ManagerId = employee.ManagerId,
+            PositionId = employee.PositionId,
+            RoleId = employee.RoleId,
+            Gender = employee.Gender,
+            MaritalStatus = employee.MaritalStatus,
+            Status = employee.Status
+
+
+        };
+
+        await InvokeAsync(StateHasChanged);
+        await JS.InvokeVoidAsync("bootstrapInterop.showModal", "#editModal");
+
+    }
+
+    [Inject] IJSRuntime JS { get; set; }
+}
+

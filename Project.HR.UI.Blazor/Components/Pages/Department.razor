@@ -1,0 +1,330 @@
+﻿@page "/department"
+@using Project.HR.Domain.DTOs
+@using Project.HR.Domain.Helpers
+@using Project.HR.UI.Blazor.Helpers
+
+
+<h3>Department</h3>
+@rendermode InteractiveServer
+
+@inject IHttpClientFactory ClientFactory
+
+<div class="container text-center">
+    <div class="row">
+        <div class="col">
+            <button id="btnRefresh" class="btn btn-info" @onclick="LoadDepartments">Refresh</button>
+        </div>
+        <div class="col">
+            <button id="btnCreate" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#createModal">Create Department</button>
+
+        </div>
+
+    </div>
+</div>
+<br />
+<br />
+@if (departments is null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th></th>
+                <th></th>
+                <th>
+                    ID
+                </th>
+                <th>
+                    Name
+                </th>
+                <th>
+                    Code
+                </th>
+                <th>
+                    Description
+                </th>
+                <th>
+                    Parent Department
+                </th>
+                <th>
+                    Budget
+                </th>
+
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var dept in departments)
+            {
+                <tr>
+                    <td><button class="bnt btn-primary" @onclick="() => OnEditClicked(dept)" id="@dept.Id">Edit</button></td>
+                    <td>   <button class="btn btn-danger" @onclick="() => ConfirmDelete(dept)">Delete</button></td>
+                    <td>@dept.Id</td>
+                    <td>@dept.Name</td>
+                    <td>@dept.Code</td>
+                    <td>@dept.Description</td>
+                    <td>@dept.ParentDepartmentName</td>
+                    <td>@dept.Budget.ToString("C")</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+<div class="modal fade" id="createModal" tabindex="-1" role="dialog" aria-labelledby="createModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="createModalLabel">Create Department</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+
+            </div>
+            <div class="modal-body">
+                <div class="mb-3">
+                    <label for="departmentName" class="form-label">Name</label>
+                    <InputText type="text" class="form-control" @bind-Value="department.Name"></InputText>
+                </div>
+                <div class="mb-3">
+                    <label for="departmentCode" class="form-label">Code</label>
+                    <InputText type="text" class="form-control" @bind-Value="department.Code"></InputText>
+                </div>
+                <div class="mb-3">
+                    <label for="departmentParent" class="form-label">Parent Department</label>
+                    <select class="form-select" @bind="department.ParentDepartmentId">
+                        <option value=0>-- Select Parent Department --</option>
+                        @foreach (var parentDept in parentDepartments)
+                        {
+                            <option value="@parentDept.Id">@parentDept.Name</option>
+                        }
+                    </select>
+                </div>
+                <div class="mb-3">
+                    <label for="departmentBudget" class="form-label">Budget</label>
+                    <InputNumber type="text" class="form-control" @bind-Value="department.Budget"></InputNumber>
+                </div>
+                <div class="mb-3">
+                    <label for="departmentDescription" class="form-label">Description</label>
+                    <InputText type="text" class="form-control" @bind-Value="department.Description"></InputText>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" data-bs-dismiss="modal" @onclick="CreateDepartment">Save changes</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="editModal" tabindex="-1" role="dialog" aria-labelledby="editModal" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="editModalLabel">Update Department</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+
+            </div>
+            <div class="modal-body">
+                <div class="mb-3">
+                    <label for="departmentName" class="form-label">Name</label>
+                    <InputText type="text" class="form-control" @bind-Value="selectedDepartment.Name"></InputText>
+                </div>
+                <div class="mb-3">
+                    <label for="departmentCode" class="form-label">Code</label>
+                    <InputText type="text" class="form-control" @bind-Value="selectedDepartment.Code"></InputText>
+                </div>
+                <div class="mb-3">
+                    <label for="departmentParent" class="form-label">Parent Department</label>
+                    <select class="form-select" @bind="selectedDepartment.ParentDepartmentId">
+                        <option value=0>-- Select Parent Department --</option>
+                        @foreach (var parentDept in parentDepartments)
+                        {
+                            <option value="@parentDept.Id">@parentDept.Name</option>
+                        }
+                    </select>
+                </div>
+                <div class="mb-3">
+                    <label for="departmentBudget" class="form-label">Budget</label>
+                    <InputNumber type="text" class="form-control" @bind-Value="selectedDepartment.Budget"></InputNumber>
+                </div>
+                <div class="mb-3">
+                    <label for="departmentDescription" class="form-label">Description</label>
+                    <InputText type="text" class="form-control" @bind-Value="selectedDepartment.Description"></InputText>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" data-bs-dismiss="modal" @onclick="UpdateDepartment">Save changes</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@code {
+    DepartmentDTO department = new DepartmentDTO();
+
+    List<DepartmentDTO> departments = new List<DepartmentDTO>();
+    private DepartmentDTO selectedDepartment = new DepartmentDTO();
+    private List<DepartmentDTO> parentDepartments = new List<DepartmentDTO>();
+    private DepartmentDTO parentDepartment = new DepartmentDTO();
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            await LoadDepartments();
+            await GetDepartmentList();
+        }
+        catch (Exception ex)
+        {
+            LogErrorHelper.LogError(null, ex, LogErrorHelper.ErrorLevel.Error, "Department.razor - OnInitializedAsync");
+            await JS.InvokeVoidAsync("alert", "Error loading departments: " + ex.Message);
+        }
+    }
+
+   
+    private async Task ConfirmDelete(DepartmentDTO dept)
+    {
+        bool confirmed = await JS.InvokeAsync<bool>("confirm", $"Are you sure you want to delete department {dept.Name}?");
+        if (confirmed)
+        {
+            await DeleteDepartment(dept);
+        }
+    }
+
+    private async Task GetDepartmentList()
+    {
+
+        try
+        {
+            parentDepartments = await new DepartmentHelper(ClientFactory).GetAllDepartments();
+        }
+        catch (Exception ex)
+        {
+            LogErrorHelper.LogError(null, ex, LogErrorHelper.ErrorLevel.Error, "Department.razor - GetDepartmentList");
+            await JS.InvokeVoidAsync("alert", "Error GetDepartmentList: " + ex.Message);
+        }
+    }
+    private async Task DeleteDepartment(DepartmentDTO dept)
+    {
+        try
+        {
+            bool isDeleted = await new DepartmentHelper(ClientFactory)
+            .DeleteDepartmentAsync(Convert.ToInt32(dept.Id));
+
+            if (isDeleted)
+            {
+                departments.Remove(dept);
+                await JS.InvokeVoidAsync("alert", "Department deleted successfully!");
+                await InvokeAsync(StateHasChanged);
+            }
+        }
+        catch (Exception ex)
+        {
+            LogErrorHelper.LogError(null, ex, LogErrorHelper.ErrorLevel.Error, "Department.razor - DeleteDepartment");
+            await JS.InvokeVoidAsync("alert", "Error deleting department: " + ex.Message);
+        }
+    }
+
+
+    private async Task OnEditClicked(DepartmentDTO dept)
+    {
+
+        selectedDepartment = new DepartmentDTO
+        {
+            Id = dept.Id,
+            Name = dept.Name,
+            Code = dept.Code,
+            Description = dept.Description,
+            ParentDepartmentId = dept.ParentDepartmentId,
+            Budget = dept.Budget
+        };
+        await InvokeAsync(StateHasChanged);
+        await JS.InvokeVoidAsync("bootstrapInterop.showModal", "#editModal");
+
+    }
+
+    private async Task LoadDepartments()
+    {
+
+        departments = await new DepartmentHelper(ClientFactory)
+        .GetAllDepartments();
+    }
+
+    private async Task<DepartmentDTO> CreateDepartment()
+    {
+        DepartmentDTO createdDept = new DepartmentDTO();
+
+        try
+        {
+            if (string.IsNullOrEmpty(department.Code))
+            {
+                await JS.InvokeVoidAsync("alert", "Error EditDepartment department, code is required!");
+                return createdDept;
+            }
+            if (string.IsNullOrEmpty(department.Name))
+            {
+                await JS.InvokeVoidAsync("alert", "Error EditDepartment department, Name is required!");
+                return createdDept;
+            }
+
+            if (department.ParentDepartmentId == 0)
+            {
+                department.ParentDepartmentId = null;
+            }
+            createdDept = await new DepartmentHelper(ClientFactory)
+           .CreateDepartmentAsync(department);
+            if (createdDept != null)
+            {
+                departments.Add(createdDept);
+            }
+            department = new DepartmentDTO(); /*resets form contents*/
+            await JS.InvokeVoidAsync("alert", "Department created successfully!");
+            StateHasChanged(); 
+            return createdDept;
+        }
+        catch (Exception ex)
+        {
+            LogErrorHelper.LogError(null, ex, LogErrorHelper.ErrorLevel.Error, "Department.razor - CreateDepartment");
+            await JS.InvokeVoidAsync("alert", "Error creating department: " + ex.Message);
+        }
+
+        return createdDept;
+    }
+    private async Task UpdateDepartment()
+    {
+
+
+        try
+        {
+            if (string.IsNullOrEmpty(selectedDepartment.Code))
+            {
+                await JS.InvokeVoidAsync("alert", "Error EditDepartment department, code is required!");
+                return;
+            }
+            if (string.IsNullOrEmpty(selectedDepartment.Name))
+            {
+                await JS.InvokeVoidAsync("alert", "Error EditDepartment department, Name is required!");
+                return;
+            }
+            await new DepartmentHelper(ClientFactory)
+            .UpdateDepartmentAsync(Convert.ToInt32(selectedDepartment.Id), selectedDepartment);
+
+            await LoadDepartments();
+            await JS.InvokeVoidAsync("alert", "Department updated successfully!");
+
+
+        }
+        catch (Exception ex)
+        {
+            LogErrorHelper.LogError(null, ex, LogErrorHelper.ErrorLevel.Error, "Department.razor - EditDepartment");
+            await JS.InvokeVoidAsync("alert", "Error EditDepartment department: " + ex.Message);
+        }
+
+
+    }
+    [Inject] IJSRuntime JS { get; set; }
+
+}

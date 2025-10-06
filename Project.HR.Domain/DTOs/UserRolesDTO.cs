@@ -9,7 +9,7 @@ namespace Project.HR.Domain.DTOs
 {
     public class UserRolesDTO
     {
-       
+       public int RoleId { get; set; }
         [Required, MaxLength(30)]
         public string RoleName { get; set; }
         [MaxLength(100)]

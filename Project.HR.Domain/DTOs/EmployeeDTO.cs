@@ -10,6 +10,8 @@ namespace Project.HR.Domain.DTOs
 {
     public class EmployeeDTO
     {
+        public int? UserId { get; set; }
+
         [Required, MaxLength(30)]
         public string UserName { get; set; }
 
@@ -57,9 +59,12 @@ namespace Project.HR.Domain.DTOs
         [MaxLength(20)]
         public string? EmergencyContactPhone { get; set; }
 
+        [Required]
         public int RoleId { get; set; }
+        [Required]
         public int DepartmentId { get; set; }
         public int? ManagerId { get; set; }
+        [Required]
         public int PositionId { get; set; }
     }
 }

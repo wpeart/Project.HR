@@ -11,7 +11,7 @@ namespace Project.HR.WebAPI.Endpoints
 
         public static void MapPositionEndpoints(this WebApplication app)
         {
-            var group = app.MapGroup("/positions").WithTags("Positions");
+            var group = app.MapGroup("/api/positions").WithTags("Positions");
 
             group.MapGet("/", async (IPositionService positionService) =>
             {
@@ -113,7 +113,7 @@ namespace Project.HR.WebAPI.Endpoints
             .Produces(StatusCodes.Status400BadRequest)  // Added: For validation errors
             .ProducesProblem(StatusCodes.Status500InternalServerError);
 
-            group.MapPut("/{positionName}", async (string positionName, PostionDTO positionDto, IPositionService positionService) =>
+            group.MapPut("/{id}", async (int id, PostionDTO positionDto, IPositionService positionService) =>
             {
                 try
                 {
@@ -126,7 +126,7 @@ namespace Project.HR.WebAPI.Endpoints
                         MaxSalary = positionDto.MaxSalary,
                         MinSalary = positionDto.MinSalary
                     };
-                    var updatedPosition = await positionService.UpdatePositionAsync(positionName, position);
+                    var updatedPosition = await positionService.UpdatePositionAsync(id, position);
                     return updatedPosition is not null ? Results.Ok(updatedPosition) : Results.NotFound();
                 }
                 catch (Exception ex)
@@ -140,11 +140,11 @@ namespace Project.HR.WebAPI.Endpoints
             .Produces(StatusCodes.Status404NotFound)
             .ProducesProblem(StatusCodes.Status500InternalServerError);
 
-            group.MapDelete("/{positionName}", async (string positionName, IPositionService positionService) =>
+            group.MapDelete("/{id}", async (int id, IPositionService positionService) =>
             {
                 try
                 {
-                    var deleted = await positionService.DeletePositionAsync(positionName);
+                    var deleted = await positionService.DeletePositionAsync(id);
                     return deleted ? Results.NoContent() : Results.NotFound();
                 }
                 catch (Exception ex)
