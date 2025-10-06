@@ -1,4 +1,5 @@
 ﻿using Project.HR.Domain.DTOs;
+using Project.HR.Domain.Models;
 using System.Text.Json;
 
 namespace Project.HR.UI.Blazor.Helpers
@@ -50,15 +51,19 @@ namespace Project.HR.UI.Blazor.Helpers
             return null;
         }
 
-        public async Task<EmployeeDTO?> UpdateEmployeeAsync(int id, EmployeeDTO employee)
+        public async Task<Employee?> UpdateEmployeeAsync(int id, EmployeeDTO employee)
         {
             var client = _clientFactory.CreateClient("HRApiClient");
             var response = await client.PutAsJsonAsync($"api/employees/{id}", employee);
             if (response.IsSuccessStatusCode)
             {
                 var jsonString = await response.Content.ReadAsStringAsync();
-                return JsonSerializer.Deserialize<EmployeeDTO>(jsonString, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+                return JsonSerializer.Deserialize<Employee>(jsonString, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
             }
+
+            var errorContent = await response.Content.ReadAsStringAsync();
+            Console.WriteLine($"Update failed: {response.StatusCode} - {errorContent}");
+
             return null;
         }
 

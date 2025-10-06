@@ -80,6 +80,7 @@ else
                 <tr>
                     <td><button class="bnt btn-primary" @onclick="() => OnEditClicked(employee)" id="@employee.UserId">Edit</button></td>
                     <td>   <button class="btn btn-danger" @onclick="() => ConfirmDelete(employee)">Delete</button></td>
+                       <td>@employee.UserId  </td>
                     <td>@employee.UserName  </td>
                     <td>@employee.UserName</td>
                     <td>@employee.FirstName</td>
@@ -123,15 +124,15 @@ else
             <div class="modal-body">
                 <div class="mb-3">
                     <label for="employeeUsername" class="form-label">UserName</label>
-                    <InputText type="text" class="form-control" @bind-Value="employee.UserName"></InputText>
+                    <InputText type="text" class="form-control" @bind-Value="employee.UserName" required></InputText>
                 </div>
                 <div class="mb-3">
                     <label for="employeePassword" class="form-label">Password</label>
-                    <InputText type="text" class="form-control" @bind-Value="employee.Password"></InputText>
+                    <InputText type="text" class="form-control" @bind-Value="employee.Password" required></InputText>
                 </div>
                 <div class="mb-3">
                     <label for="employeeFirstName" class="form-label">FirstName</label>
-                    <InputText type="text" class="form-control" @bind-Value="employee.FirstName"></InputText>
+                    <InputText type="text" class="form-control" @bind-Value="employee.FirstName" required></InputText>
                 </div>
                 <div class="mb-3">
                     <label for="employeeMiddleName" class="form-label">MiddleName</label>
@@ -139,31 +140,28 @@ else
                 </div>
                 <div class="mb-3">
                     <label for="employeeLastName" class="form-label">LastName</label>
-                    <InputText class="form-control" @bind-Value="employee.LastName"></InputText>
+                    <InputText class="form-control" @bind-Value="employee.LastName" required></InputText>
                 </div>
                 <div class="mb-3">
                     <label for="employeeEmail" class="form-label">Email</label>
-                    <InputText class="form-control" @bind-Value="employee.Email"></InputText>
+                    <InputText class="form-control" @bind-Value="employee.Email" required type="email"></InputText>
                 </div>
 
                 <div class="mb-3">
                     <label for="positionPhoneNumber" class="form-label">PhoneNumber</label>
-                    <InputText class="form-control" @bind-Value="employee.PhoneNumber"></InputText>
+                    <InputText class="form-control" @bind-Value="employee.PhoneNumber" required></InputText>
 
                 </div>
 
                 <div class="mb-3">
                     <label for="employeeDateOfBirth" class="form-label">DateOfBirth</label>
-                    <InputDate class="form-control" @bind-Value="employee.DateOfBirth"></InputDate>
+                    <InputDate class="form-control" @bind-Value="employee.DateOfBirth" required></InputDate>
                 </div>
                 <div class="mb-3">
                     <label for="employeeHireDate" class="form-label">HireDate</label>
-                    <InputDate class="form-control" @bind-Value="employee.HireDate"></InputDate>
+                    <InputDate class="form-control" @bind-Value="employee.HireDate" required></InputDate>
                 </div>
-                <div class="mb-3">
-                    <label for="employeeTerminationDate" class="form-label">TerminationDate</label>
-                    <InputDate class="form-control" @bind-Value="employee.TerminationDate"></InputDate>
-                </div>
+
                 <div class="mb-3">
                     <label for="employeeGender" class="form-label">Gender</label>
                     <InputSelect class="form-select" @bind-Value="employee.Gender">
@@ -175,7 +173,7 @@ else
                 </div>
                 <div class="mb-3">
                     <label for="employeeMaritalStatus" class="form-label">MaritalStatus</label>
-                    <InputSelect class="form-select" @bind-Value="employee.Gender">
+                    <InputSelect class="form-select" @bind-Value="employee.MaritalStatus">
                         @foreach (var type in Enum.GetValues(typeof(MaritalStatus)).Cast<MaritalStatus>())
                         {
                             <option value="@type">@type</option>
@@ -193,35 +191,36 @@ else
 
                     <div class="mb-3">
                         <label for="employeeAddress" class="form-label">Address</label>
-                        <InputText class="form-control" @bind-Value="employee.Address"></InputText>
+                        <InputText class="form-control" @bind-Value="employee.Address" required></InputText>
                     </div>
                     <div class="mb-3">
                         <label for="employeeCity" class="form-label">City</label>
-                        <InputText class="form-control" @bind-Value="employee.City"></InputText>
+                        <InputText class="form-control" @bind-Value="employee.City" required></InputText>
                     </div>
                     <div class="mb-3">
                         <label for="employeeState" class="form-label">State</label>
-                        <InputText class="form-control" @bind-Value="employee.State"></InputText>
+                        <InputText class="form-control" @bind-Value="employee.State" required></InputText>
                     </div>
                     <div class="mb-3">
                         <label for="employeeZipCode" class="form-label">Zipcode</label>
-                        <InputText class="form-control" @bind-Value="employee.ZipCode"></InputText>
+                        <InputText class="form-control" @bind-Value="employee.ZipCode" required></InputText>
                     </div>
                     <div class="mb-3">
                         <label for="employeeCountry" class="form-label">Country</label>
-                        <InputText class="form-control" @bind-Value="employee.Country"></InputText>
+                        <InputText class="form-control" @bind-Value="employee.Country" required></InputText>
                     </div>
                     <div class="mb-3">
                         <label for="employeeEmergencyContactName" class="form-label">EmergencyContactName</label>
-                        <InputText class="form-control" @bind-Value="employee.EmergencyContactName"></InputText>
+                        <InputText class="form-control" @bind-Value="employee.EmergencyContactName" required></InputText>
                     </div>
                     <div class="mb-3">
                         <label for="employeeEmergencyContactPhone" class="form-label">EmergencyContactPhone</label>
-                        <InputText class="form-control" @bind-Value="employee.EmergencyContactPhone"></InputText>
+                        <InputText class="form-control" @bind-Value="employee.EmergencyContactPhone" required></InputText>
                     </div>
 
                     <label for="employeeRole" class="form-label">Role</label>
                     <InputSelect class="form-select" @bind-Value="employee.RoleId">
+                        <option value="">Please select a role</option>
                         @foreach (var role in roles)
                         {
                             <option value="@role.RoleId">@role.RoleName</option>
@@ -230,6 +229,7 @@ else
 
                     <label for="employeeDepartmentId" class="form-label">DepartmentId</label>
                     <InputSelect class="form-select" @bind-Value="employee.DepartmentId">
+                        <option value="">Please select a department</option>
                         @foreach (var department in departments)
                         {
                             <option value="@department.Id">@department.Description</option>
@@ -238,6 +238,8 @@ else
 
                     <label for="employeeManager" class="form-label">Employee Manager</label>
                     <InputSelect class="form-select" @bind-Value="employee.ManagerId">
+                        <option value="">Please select an option if the employee has a manager</option>
+
                         @foreach (var manager in managers)
                         {
                             <option value="@manager.ManagerId">@manager.FirstName - @manager.LastName (@manager.Email)</option>
@@ -246,6 +248,7 @@ else
 
                     <label for="employeePosition" class="form-label">Employee position</label>
                     <InputSelect class="form-select" @bind-Value="employee.PositionId">
+                        <option value="">Please select a position</option>
                         @foreach (var position in positions)
                         {
                             <option value="@position.Id">@position.Description</option>
@@ -324,7 +327,7 @@ else
                 </div>
                 <div class="mb-3">
                     <label for="employeeMaritalStatus" class="form-label">MaritalStatus</label>
-                    <InputSelect class="form-select" @bind-Value="selectedEmployee.Gender">
+                    <InputSelect class="form-select" @bind-Value="selectedEmployee.MaritalStatus">
                         @foreach (var type in Enum.GetValues(typeof(MaritalStatus)).Cast<MaritalStatus>())
                         {
                             <option value="@type">@type</option>
@@ -371,6 +374,7 @@ else
 
                     <label for="employeeStatus" class="form-label">Role</label>
                     <InputSelect class="form-select" @bind-Value="selectedEmployee.RoleId">
+                        <option value="">Please select a role</option>
                         @foreach (var role in roles)
                         {
                             <option value="@role.RoleId">@role.RoleName</option>
@@ -379,6 +383,7 @@ else
 
                     <label for="employeeDepartmentId" class="form-label">DepartmentId</label>
                     <InputSelect class="form-select" @bind-Value="selectedEmployee.DepartmentId">
+                        <option value="">Please select a department</option>
                         @foreach (var department in departments)
                         {
                             <option value="@department.Id">@department.Description</option>
@@ -387,6 +392,8 @@ else
 
                     <label for="employeeManager" class="form-label">Employee Manager</label>
                     <InputSelect class="form-select" @bind-Value="selectedEmployee.ManagerId">
+                        <option value="">Please select an option if the employee has a manager</option>
+
                         @foreach (var manager in managers)
                         {
                             <option value="@manager.ManagerId">@manager.FirstName - @manager.LastName (@manager.Email)</option>
@@ -395,6 +402,7 @@ else
 
                     <label for="employeePosition" class="form-label">Employee position</label>
                     <InputSelect class="form-select" @bind-Value="selectedEmployee.PositionId">
+                        <option value="">Please select a position</option>
                         @foreach (var position in positions)
                         {
                             <option value="@position.Id">@position.Description</option>
@@ -434,6 +442,9 @@ else
             Task task4 = LoadEmployees();
 
             await Task.WhenAll(task, task2, task3, task4);
+
+            employee.DateOfBirth = DateTime.Now.AddYears(-18);
+            employee.HireDate = DateTime.Now;
         }
         catch (Exception ex)
         {

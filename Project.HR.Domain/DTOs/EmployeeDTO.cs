@@ -59,9 +59,12 @@ namespace Project.HR.Domain.DTOs
         [MaxLength(20)]
         public string? EmergencyContactPhone { get; set; }
 
+        [Required]
         public int RoleId { get; set; }
+        [Required]
         public int DepartmentId { get; set; }
         public int? ManagerId { get; set; }
+        [Required]
         public int PositionId { get; set; }
     }
 }
