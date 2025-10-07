@@ -17,6 +17,14 @@ namespace Project.HR.Data.Models
         {
         }
 
+        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+        {
+            var dbPath = Environment.GetEnvironmentVariable("HOME") != null
+            ? Path.Combine(Environment.GetEnvironmentVariable("HOME"), "data", "hr_database.db")
+            : "hr_database.db"; // Local development
+
+            optionsBuilder.UseSqlite($"Data Source={dbPath}");
+        }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<UserRoles>(entity =>

@@ -21,7 +21,7 @@ namespace Project.HR.WebAPI.Endpoints
                 catch (Exception ex)
                 {
                     LogErrorHelper.LogError("Error fetching departments", ex, LogErrorHelper.ErrorLevel.Error, "Get All Departments");
-                    return Results.Problem("An error occurred while fetching departments.");
+                    return Results.Problem("An error occurred while fetching departments. " + ex.ToString()) ;
                 }
             })
                 .WithName("GetAllDepartments")
