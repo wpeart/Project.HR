@@ -24,10 +24,10 @@ jobs:
           dotnet-version: '9.x'
 
       - name: Build with dotnet
-        run: dotnet build --configuration Release ./Presentation/Project.HR.UI.Blazor/Project.HR.UI.Blazor.csproj
+        run: dotnet build --configuration Release Presentation/Project.HR.UI.Blazor/Project.HR.UI.Blazor.csproj
 
       - name: dotnet publish
-        run: dotnet publish -c Release -o "${{env.DOTNET_ROOT}}/myapp" "./Presentation/Project.HR.UI.Blazor/Project.HR.UI.Blazor.csproj"
+        run: dotnet publish -c Release -o "${{env.DOTNET_ROOT}}/myapp" "Presentation/Project.HR.UI.Blazor/Project.HR.UI.Blazor.csproj"
 
       - name: Upload artifact for deployment job
         uses: actions/upload-artifact@v4
@@ -64,3 +64,4 @@ jobs:
           package: .
 
           
+
