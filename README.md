@@ -110,3 +110,14 @@ namespace Project.HR.Domain.Interfaces
 * Built with .NET 9 Minimal APIs.
 * Exposes endpoints for all CRUD operations.
 * Acts as the bridge between the UI and Data Layer.
+
+  📌 Roadmap
+* [ ] Add authentication & authorization
+
+* [ ] Expand domain models (e.g., Payroll, Benefits)
+
+* [ ] Improve error handling and logging
+
+* [ ] Add unit/integration tests
+
+
