@@ -120,4 +120,8 @@ namespace Project.HR.Domain.Interfaces
 
 * [ ] Add unit/integration tests
 
+## UI URL
+https://hrblazorapp-g4cnfbewhbbxh3bt.canadacentral-01.azurewebsites.net/
 
+## WebApi URL
+https://hrblazorapp-api-hqamcfbhcwa8cmdg.canadacentral-01.azurewebsites.net/index.html
